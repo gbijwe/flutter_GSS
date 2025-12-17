@@ -1,21 +1,20 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/screens/scaffolds/DefaultToolBarScaffold.dart';
 import 'package:photo_buddy/widgets/CustomToolbarItem.dart';
 
-class RecentlyAddedPage extends StatefulWidget {
-  const RecentlyAddedPage({super.key});
+class TimelinePage extends StatefulWidget {
+  const TimelinePage({super.key});
 
   @override
-  State<RecentlyAddedPage> createState() => _RecentlyAddedPageState();
+  State<TimelinePage> createState() => _TimelinePageState();
 }
 
-class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
+class _TimelinePageState extends State<TimelinePage> {
   @override
   Widget build(BuildContext context) {
     return defaultToolBarScaffold(
-        title: 'Recently Added',
+        title: 'Timeline',
         actions: [
           customToolbarItem(label: 'Select Source', iconData: CupertinoIcons.folder_badge_plus, onPressed: () {
             debugPrint('Select Source pressed');
@@ -34,7 +33,6 @@ class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
       ]
     );
   }
-
 
   Widget _buildRecentlyAddedContentArea() {
     return Column(

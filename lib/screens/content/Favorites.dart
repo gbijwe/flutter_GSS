@@ -1,17 +1,16 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/screens/scaffolds/DefaultToolBarScaffold.dart';
 import 'package:photo_buddy/widgets/CustomToolbarItem.dart';
 
-class RecentlyAddedPage extends StatefulWidget {
-  const RecentlyAddedPage({super.key});
+class FavoritesPage extends StatefulWidget {
+  const FavoritesPage({super.key});
 
   @override
-  State<RecentlyAddedPage> createState() => _RecentlyAddedPageState();
+  State<FavoritesPage> createState() => _FavoritesPageState();
 }
 
-class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
+class _FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return defaultToolBarScaffold(
@@ -34,7 +33,6 @@ class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
       ]
     );
   }
-
 
   Widget _buildRecentlyAddedContentArea() {
     return Column(

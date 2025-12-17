@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 
-MacosScaffold toolBarScaffold({
+MacosScaffold defaultToolBarScaffold({
   required String title,
   required List<Widget> children,
   List<ToolbarItem>? actions,

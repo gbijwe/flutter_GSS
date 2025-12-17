@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/screens/landing.dart';
+import 'package:provider/provider.dart';
 
 Future<void> _configureMacosWindowUtils() async {
   const config = MacosWindowUtilsConfig();
   await config.apply();
 }
-
 
 void main() async {
   if (!kIsWeb) {
@@ -17,7 +18,14 @@ void main() async {
       await _configureMacosWindowUtils();
     }
   }
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => FileSystemMediaProvider()..loadSavedPath()),
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -25,9 +33,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MacosApp(
-      debugShowCheckedModeBanner: false,
-        home: LandingScreen()
-    );
+    return MacosApp(debugShowCheckedModeBanner: false, home: LandingScreen());
   }
 }

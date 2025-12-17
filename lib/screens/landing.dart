@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:photo_buddy/screens/content/AllMedia.dart';
+import 'package:photo_buddy/screens/content/Favorites.dart';
+import 'package:photo_buddy/screens/content/People.dart';
 import 'package:photo_buddy/screens/content/RecentlyAdded.dart';
+import 'package:photo_buddy/screens/content/Timeline.dart';
 import 'package:photo_buddy/widgets/CustomSideBarItem.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -18,13 +22,13 @@ class _LandingScreenState extends State<LandingScreen> {
       case 0:
         return RecentlyAddedPage();
       case 1:
-        return Center(child: Text('All Media'));
+        return AllMediaPage();
       case 2:
-        return Center(child: Text('Timeline'));
+        return TimelinePage();
       case 3:
-        return Center(child: Text('Favourites'));
+        return FavoritesPage();
       case 4:
-        return Center(child: Text('People'));
+        return PeoplePage();
       case 5:
         return Center(child: Text('Photos'));
       case 6:
