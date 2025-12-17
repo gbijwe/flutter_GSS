@@ -24,7 +24,7 @@ class FileSystemMediaProvider extends ChangeNotifier {
     if (savedPath != null && await Directory(savedPath).exists()) {
       _selectedPath = savedPath;
       notifyListeners();
-      
+
       // Immediately load and watch the saved path
       await _loadFiles();
       _startWatching();
@@ -34,15 +34,15 @@ class FileSystemMediaProvider extends ChangeNotifier {
   /// 1. Triggered when user clicks "Select Source"
   Future<void> pickSourceDirectory() async {
     final String? directoryPath = await getDirectoryPath();
-    
+
     if (directoryPath != null) {
       _selectedPath = directoryPath;
       notifyListeners();
-      
+
       await _savePathToPreferences(directoryPath);
       // Load initial files
       await _loadFiles();
-      
+
       // Start watching for future changes
       _startWatching();
     }
@@ -61,7 +61,7 @@ class FileSystemMediaProvider extends ChangeNotifier {
     if (await dir.exists()) {
       // Get all files, filter for images/videos only
       final List<FileSystemEntity> files = await dir.list().toList();
-      
+
       _mediaFiles = files.where((file) {
         return _isMediaFile(file.path);
       }).toList();
@@ -74,17 +74,22 @@ class FileSystemMediaProvider extends ChangeNotifier {
   void _startWatching() {
     // Cancel any previous subscription to avoid memory leaks
     _watchSubscription?.cancel();
-
-    // Use DirectoryWatcher from package:watcher
-    final watcher = DirectoryWatcher(_selectedPath!);
-    
-    _watchSubscription = watcher.events.listen((event) {
-      // When a file is added, removed, or modified, reload the list
-      // Optimization: You could handle specific events to add/remove 
-      // single items instead of reloading all, but reloading is safer for now.
-      print("File changed: ${event.type} ${event.path}");
-      _loadFiles(); 
-    });
+    if (_selectedPath == null) return;
+    // We use the absolute path to avoid issues with relative paths
+    final absolutePath = p.absolute(_selectedPath!);
+    try {
+      // Use DirectoryWatcher from package:watcher
+      final watcher = DirectoryWatcher(absolutePath);
+      _watchSubscription = watcher.events.listen((event) {
+        // When a file is added, removed, or modified, reload the list
+        // Optimization: You could handle specific events to add/remove
+        // single items instead of reloading all, but reloading is safer for now.
+        debugPrint("File changed: ${event.type} ${event.path}");
+        _loadFiles();
+      });
+    } catch (e) {
+      debugPrint("Error starting watcher: $e");
+    }
   }
 
   bool _isMediaFile(String path) {
@@ -92,7 +97,7 @@ class FileSystemMediaProvider extends ChangeNotifier {
     final extension = p.extension(path).toLowerCase();
     return allowedExtensions.contains(extension);
   }
-  
+
   @override
   void dispose() {
     _watchSubscription?.cancel();
