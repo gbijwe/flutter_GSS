@@ -35,6 +35,7 @@ class _AllMediaPageState extends State<AllMediaPage> {
           iconData: CupertinoIcons.arrow_clockwise,
           onPressed: () {
             debugPrint('Rescan pressed');
+            mediaProvider.loadSavedPath();
           },
         ),
         customToolbarItem(
@@ -74,7 +75,7 @@ class _AllMediaPageState extends State<AllMediaPage> {
                     ;
 
                     if (file.fileType == FileType.video) {
-                      return VideoThumbnailWidget(file: file);
+                      return VideoThumbnailTile(videoPath: file.path, width: 100, height: 100);
                     } else if (file.fileType == FileType.image) {
                       return ImageThumbnailWidget(file: file);
                     } else {

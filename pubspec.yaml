@@ -8,11 +8,13 @@ environment:
 
 dependencies:
   cupertino_icons: ^1.0.8
+  fc_native_video_thumbnail: ^0.17.2
   file_selector: ^1.1.0
   flutter:
     sdk: flutter
   macos_ui: ^2.2.2
   path: ^1.9.1
+  path_provider: ^2.1.5
   provider: ^6.1.5+1
   shared_preferences: ^2.5.4
   watcher: ^1.2.0
