@@ -1,8 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:photo_buddy/screens/scaffolds/DefaultToolBarScaffold.dart';
-import 'package:photo_buddy/widgets/CustomToolbarItem.dart';
+import 'package:photo_buddy/screens/content/ContentTemplate.dart';
 
 class RecentlyAddedPage extends StatefulWidget {
   const RecentlyAddedPage({super.key});
@@ -14,24 +13,15 @@ class RecentlyAddedPage extends StatefulWidget {
 class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
   @override
   Widget build(BuildContext context) {
-    return defaultToolBarScaffold(
-        title: 'Recently Added',
-        actions: [
-          customToolbarItem(label: 'Select Source', iconData: CupertinoIcons.folder_badge_plus, onPressed: () {
-            debugPrint('Select Source pressed');
-          }),
-          customToolbarItem(label: 'Rescan', iconData: CupertinoIcons.arrow_clockwise, onPressed: () {
-            debugPrint('Rescan pressed');
-          }),
-          customToolbarItem(label: 'Select', onPressed: () {
-            debugPrint('Select pressed');
-          }),
-        ],
+    return ContentTemplateWidget(
+      title: 'Recently Added',
       children: [
-        ContentArea(builder: (context, scrollcontroller) {
-          return _buildRecentlyAddedContentArea();
-        })
-      ]
+        ContentArea(
+          builder: (context, scrollcontroller) {
+            return _buildRecentlyAddedContentArea();
+          },
+        ),
+      ],
     );
   }
 

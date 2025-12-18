@@ -6,32 +6,6 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-// class VideoThumbnailWidget extends StatelessWidget {
-//   const VideoThumbnailWidget({super.key, required this.file});
-
-//   final FileSystemEntity file;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
-//       decoration: BoxDecoration(
-//         border: Border.all(color: MacosColors.transparent),
-//         borderRadius: BorderRadius.circular(8),
-//       ),
-//       clipBehavior: Clip.antiAlias,
-//       child: Container(
-//         color: CupertinoColors.systemGrey3,
-//         child: Icon(
-//           CupertinoIcons.play_circle_fill,
-//           size: 48,
-//           color: CupertinoColors.activeOrange,
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 class VideoThumbnailTile extends StatefulWidget {
   final String videoPath;
   final double width;
@@ -62,7 +36,7 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
     try {
       // 1. Get the system temp directory
       final tempDir = await getTemporaryDirectory();
-      
+
       // 2. Create a unique filename for this video's thumbnail
       // We use the video filename + .jpg
       final videoFileName = p.basename(widget.videoPath);
@@ -84,7 +58,7 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
         format: 'jpeg',
         quality: 90,
       );
-      
+
       if (generated) {
         return thumbFile;
       }
@@ -100,7 +74,8 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
     return FutureBuilder<File?>(
       future: _thumbFuture,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && snapshot.data != null) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            snapshot.data != null) {
           // SUCCESS: Show the generated image
           return Container(
             margin: EdgeInsets.all(2),
@@ -139,8 +114,8 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
             decoration: BoxDecoration(
               border: Border.all(color: MacosColors.transparent),
               borderRadius: BorderRadius.circular(8),
+              color: CupertinoColors.systemGrey,
             ),
-            color: CupertinoColors.systemGrey,
             child: const Center(
               child: CupertinoActivityIndicator(color: CupertinoColors.white),
             ),

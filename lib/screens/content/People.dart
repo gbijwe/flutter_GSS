@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:photo_buddy/screens/scaffolds/DefaultToolBarScaffold.dart';
-import 'package:photo_buddy/widgets/CustomToolbarItem.dart';
+import 'package:photo_buddy/screens/content/ContentTemplate.dart';
 
 class PeoplePage extends StatefulWidget {
   const PeoplePage({super.key});
@@ -13,30 +12,8 @@ class PeoplePage extends StatefulWidget {
 class _PeoplePageState extends State<PeoplePage> {
   @override
   Widget build(BuildContext context) {
-    return defaultToolBarScaffold(
-      title: 'Recently Added',
-      actions: [
-        customToolbarItem(
-          label: 'Select Source',
-          iconData: CupertinoIcons.folder_badge_plus,
-          onPressed: () {
-            debugPrint('Select Source pressed');
-          },
-        ),
-        customToolbarItem(
-          label: 'Rescan',
-          iconData: CupertinoIcons.arrow_clockwise,
-          onPressed: () {
-            debugPrint('Rescan pressed');
-          },
-        ),
-        customToolbarItem(
-          label: 'Select',
-          onPressed: () {
-            debugPrint('Select pressed');
-          },
-        ),
-      ],
+    return ContentTemplateWidget(
+      title: 'People',
       children: [
         ContentArea(
           builder: (context, scrollcontroller) {

@@ -4,6 +4,7 @@ import 'package:macos_ui/macos_ui.dart';
 MacosScaffold defaultToolBarScaffold({
   required String title,
   required List<Widget> children,
+  required String source,
   List<ToolbarItem>? actions,
   double titleWidth = 200.0,
   bool centerTitle = false,
@@ -11,7 +12,7 @@ MacosScaffold defaultToolBarScaffold({
 }) {
   return MacosScaffold(
     toolBar: ToolBar(
-      title: Text(title),
+      title: RichText(text: TextSpan(text: "$title\n$source",), maxLines: 2, overflow: TextOverflow.ellipsis,),
       actions: actions,
       titleWidth: titleWidth,
       centerTitle: centerTitle,

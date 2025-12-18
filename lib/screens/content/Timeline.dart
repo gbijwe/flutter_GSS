@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:photo_buddy/screens/content/ContentTemplate.dart';
 import 'package:photo_buddy/screens/scaffolds/DefaultToolBarScaffold.dart';
 import 'package:photo_buddy/widgets/CustomToolbarItem.dart';
 
@@ -13,24 +14,15 @@ class TimelinePage extends StatefulWidget {
 class _TimelinePageState extends State<TimelinePage> {
   @override
   Widget build(BuildContext context) {
-    return defaultToolBarScaffold(
-        title: 'Timeline',
-        actions: [
-          customToolbarItem(label: 'Select Source', iconData: CupertinoIcons.folder_badge_plus, onPressed: () {
-            debugPrint('Select Source pressed');
-          }),
-          customToolbarItem(label: 'Rescan', iconData: CupertinoIcons.arrow_clockwise, onPressed: () {
-            debugPrint('Rescan pressed');
-          }),
-          customToolbarItem(label: 'Select', onPressed: () {
-            debugPrint('Select pressed');
-          }),
-        ],
+    return ContentTemplateWidget(
+      title: 'Timeline',
       children: [
-        ContentArea(builder: (context, scrollcontroller) {
-          return _buildRecentlyAddedContentArea();
-        })
-      ]
+        ContentArea(
+          builder: (context, scrollcontroller) {
+            return _buildRecentlyAddedContentArea();
+          },
+        ),
+      ],
     );
   }
 
@@ -41,10 +33,7 @@ class _TimelinePageState extends State<TimelinePage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Center(
-          child: Text("This folder is currently empty", style: TextStyle(fontSize: 13.0, color: MacosColors.black),),
-        ),
-        Center(
-          child: Text("No media was added in the last 24 hours", style: TextStyle(fontSize: 13.0, color: MacosColors.systemGrayColor),),
+          child: Text("This feature is under development", style: TextStyle(fontSize: 13.0, color: MacosColors.black),),
         ),
       ],
     );
