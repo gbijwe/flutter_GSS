@@ -4,22 +4,22 @@ import 'package:photo_buddy/screens/scaffolds/DefaultToolBarScaffold.dart';
 import 'package:photo_buddy/widgets/CustomToolbarItem.dart';
 import 'package:provider/provider.dart';
 
-class ContentTemplateWidget extends StatefulWidget {
-  const ContentTemplateWidget({super.key, required this.title, required this.children});
+class ContentTemplateWidget extends StatelessWidget {
+  const ContentTemplateWidget({
+    super.key,
+    required this.title,
+    required this.children,
+  });
 
   final String title;
   final List<Widget> children;
 
   @override
-  State<ContentTemplateWidget> createState() => _ContentTemplateWidgetState();
-}
-
-class _ContentTemplateWidgetState extends State<ContentTemplateWidget> {
-  @override
   Widget build(BuildContext context) {
-    final mediaProvider = Provider.of<FileSystemMediaProvider>(context);
+    final mediaProvider = context.watch<FileSystemMediaProvider>();
+    final mediaActions = context.read<FileSystemMediaProvider>(); // will not cause rebuilds on button presses
     return defaultToolBarScaffold(
-      title: widget.title,
+      title: title,
       source: mediaProvider.currentPath ?? "No source selected",
       actions: [
         customToolbarItem(
@@ -27,7 +27,7 @@ class _ContentTemplateWidgetState extends State<ContentTemplateWidget> {
           iconData: CupertinoIcons.folder_badge_plus,
           onPressed: () {
             debugPrint('Select Source pressed');
-            mediaProvider.pickSourceDirectory();
+            mediaActions.pickSourceDirectory();
           },
         ),
         customToolbarItem(
@@ -35,7 +35,7 @@ class _ContentTemplateWidgetState extends State<ContentTemplateWidget> {
           iconData: CupertinoIcons.arrow_clockwise,
           onPressed: () {
             debugPrint('Rescan pressed');
-            mediaProvider.loadSavedPath();
+            mediaActions.loadSavedPath();
           },
         ),
         customToolbarItem(
@@ -45,7 +45,7 @@ class _ContentTemplateWidgetState extends State<ContentTemplateWidget> {
           },
         ),
       ],
-      children: widget.children,
+      children: children,
     );
   }
 }

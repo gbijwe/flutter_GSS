@@ -13,11 +13,9 @@ extension FileTypeChecker on FileSystemEntity {
       case 'jpg':
       case 'jpeg':
       case 'png':
-      case 'gif':
       case 'bmp':
       case 'heic':
         return FileType.image;
-      case 'mp4':
       case 'mov':
       case 'avi':
       case 'mkv':

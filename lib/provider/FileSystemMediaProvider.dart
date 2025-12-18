@@ -93,7 +93,16 @@ class FileSystemMediaProvider extends ChangeNotifier {
   }
 
   bool _isMediaFile(String path) {
-    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.mp4', '.mov'];
+    const allowedExtensions = [
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.bmp',
+      '.heic',
+      '.mov',
+      '.avi',
+      '.mkv',
+    ];
     final extension = p.extension(path).toLowerCase();
     return allowedExtensions.contains(extension);
   }

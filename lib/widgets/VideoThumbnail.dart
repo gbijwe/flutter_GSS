@@ -64,7 +64,7 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
       }
       return null;
     } catch (e) {
-      debugPrint("Error generating thumbnail: $e");
+      debugPrint("Error generating thumbnail: $e. File path: ${widget.videoPath}");
       return null;
     }
   }

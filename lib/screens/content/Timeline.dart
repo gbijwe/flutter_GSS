@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/screens/content/ContentTemplate.dart';
-import 'package:photo_buddy/screens/scaffolds/DefaultToolBarScaffold.dart';
-import 'package:photo_buddy/widgets/CustomToolbarItem.dart';
 
 class TimelinePage extends StatefulWidget {
   const TimelinePage({super.key});
