@@ -48,14 +48,14 @@ class _AllMediaPageState extends State<AllMediaPage> {
                     final file = mediaProvider.mediaFiles[index];
                     ;
 
-                    if (file.fileType == FileType.video) {
+                    if (file.type == FileType.video) {
                       return VideoThumbnailTile(
                         videoPath: file.path,
                         width: 100,
                         height: 100,
                       );
-                    } else if (file.fileType == FileType.image) {
-                      return ImageThumbnailWidget(file: file);
+                    } else if (file.type == FileType.image) {
+                      return ImageThumbnailWidget(path: file.path, id: file.id, isFavorite: file.isFavorite);
                     } else {
                       return Center(
                         child: Text(

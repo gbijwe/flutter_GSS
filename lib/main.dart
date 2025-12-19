@@ -18,10 +18,15 @@ void main() async {
       await _configureMacosWindowUtils();
     }
   }
+
+  final mediaProvider = FileSystemMediaProvider();
+  await mediaProvider.init();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => FileSystemMediaProvider()..loadSavedPath()),
+        // ChangeNotifierProvider(create: (_) => FileSystemMediaProvider()..loadSavedPath()),
+        ChangeNotifierProvider.value(value: mediaProvider)
       ],
       child: const MainApp(),
     ),

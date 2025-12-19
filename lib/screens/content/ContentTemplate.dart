@@ -35,7 +35,7 @@ class ContentTemplateWidget extends StatelessWidget {
           iconData: CupertinoIcons.arrow_clockwise,
           onPressed: () {
             debugPrint('Rescan pressed');
-            mediaActions.loadSavedPath();
+            // mediaActions.loadSavedPath();
           },
         ),
         customToolbarItem(
