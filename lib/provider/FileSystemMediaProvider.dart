@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/data/repo/mediaRepo.dart';
+import 'package:photo_buddy/helpers/FileTypeChecker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 
@@ -16,6 +17,10 @@ class FileSystemMediaProvider extends ChangeNotifier {
   List<MediaItem> get mediaFiles => _mediaFiles;
   List<MediaItem> get recentlyAddedMediaFiles => _recentlyAddedMediaFiles;
   List<MediaItem> get favoriteMediaFiles => _favoriteMediaFiles;
+  List<MediaItem> get panaromicImages => _mediaFiles.where((file) => file.type == FileType.image && file.aspectRatio != null && file.aspectRatio! < 0.40).toList();
+  List<MediaItem> get imageFilesOnly => _mediaFiles.where((file) => file.type == FileType.image).toList();
+  List<MediaItem> get videoFilesOnly => _mediaFiles.where((file) => file.type == FileType.video).toList();
+
   String? get currentPath => _selectedPath;
 
   // Initialize DB and load previous state

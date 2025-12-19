@@ -19,10 +19,17 @@ class MediaItem {
 
   bool isFavorite = false; 
 
+  int? height;
+  int? width; 
+  float? aspectRatio; 
+
   MediaItem({
     required this.path,
     required this.dateAdded,  
     required this.type,
     this.isFavorite = false,
+    this.height, 
+    this.width, 
+    this.aspectRatio,
   });
 }

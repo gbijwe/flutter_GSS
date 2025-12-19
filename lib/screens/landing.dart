@@ -5,6 +5,9 @@ import 'package:photo_buddy/screens/content/Favorites.dart';
 import 'package:photo_buddy/screens/content/People.dart';
 import 'package:photo_buddy/screens/content/RecentlyAdded.dart';
 import 'package:photo_buddy/screens/content/Timeline.dart';
+import 'package:photo_buddy/screens/content/filterMediaTypes/Panaromas.dart';
+import 'package:photo_buddy/screens/content/filterMediaTypes/Photos.dart';
+import 'package:photo_buddy/screens/content/filterMediaTypes/Videos.dart';
 import 'package:photo_buddy/widgets/CustomSideBarItem.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -30,9 +33,9 @@ class _LandingScreenState extends State<LandingScreen> {
       case 4:
         return PeoplePage();
       case 5:
-        return Center(child: Text('Photos'));
+        return PhotosPage();
       case 6:
-        return Center(child: Text('Videos'));
+        return VideosPage();
       case 7:
         return Center(child: Text('Selfies'));
       case 8:
@@ -40,7 +43,7 @@ class _LandingScreenState extends State<LandingScreen> {
       case 9:
         return Center(child: Text('Portraits'));
       case 10:
-        return Center(child: Text('Panorama'));
+        return PanaromasPage();
       case 11:
         return Center(child: Text('New folder 1'));
       case 12:
@@ -87,6 +90,7 @@ class _LandingScreenState extends State<LandingScreen> {
               ),
               SidebarItem(
                 label: Text("Media Types"),
+                expandDisclosureItems: true,
                 disclosureItems: [
                   customSideBarItem(
                     label: 'Photos',
@@ -122,6 +126,7 @@ class _LandingScreenState extends State<LandingScreen> {
               ),
               SidebarItem(
                 label: Text("Folders"),
+                expandDisclosureItems: true,
                 disclosureItems: [
                   customSideBarItem(
                     label: 'New folder 1',

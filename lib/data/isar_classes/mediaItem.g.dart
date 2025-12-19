@@ -17,23 +17,30 @@ const MediaItemSchema = CollectionSchema(
   name: r'MediaFiles',
   id: -803020191861091133,
   properties: {
-    r'dateAdded': PropertySchema(
+    r'aspectRatio': PropertySchema(
       id: 0,
+      name: r'aspectRatio',
+      type: IsarType.float,
+    ),
+    r'dateAdded': PropertySchema(
+      id: 1,
       name: r'dateAdded',
       type: IsarType.dateTime,
     ),
+    r'height': PropertySchema(id: 2, name: r'height', type: IsarType.long),
     r'isFavorite': PropertySchema(
-      id: 1,
+      id: 3,
       name: r'isFavorite',
       type: IsarType.bool,
     ),
-    r'path': PropertySchema(id: 2, name: r'path', type: IsarType.string),
+    r'path': PropertySchema(id: 4, name: r'path', type: IsarType.string),
     r'type': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'type',
       type: IsarType.string,
       enumMap: _MediaItemtypeEnumValueMap,
     ),
+    r'width': PropertySchema(id: 6, name: r'width', type: IsarType.long),
   },
 
   estimateSize: _mediaItemEstimateSize,
@@ -108,10 +115,13 @@ void _mediaItemSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.dateAdded);
-  writer.writeBool(offsets[1], object.isFavorite);
-  writer.writeString(offsets[2], object.path);
-  writer.writeString(offsets[3], object.type.name);
+  writer.writeFloat(offsets[0], object.aspectRatio);
+  writer.writeDateTime(offsets[1], object.dateAdded);
+  writer.writeLong(offsets[2], object.height);
+  writer.writeBool(offsets[3], object.isFavorite);
+  writer.writeString(offsets[4], object.path);
+  writer.writeString(offsets[5], object.type.name);
+  writer.writeLong(offsets[6], object.width);
 }
 
 MediaItem _mediaItemDeserialize(
@@ -121,12 +131,15 @@ MediaItem _mediaItemDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = MediaItem(
-    dateAdded: reader.readDateTime(offsets[0]),
-    isFavorite: reader.readBoolOrNull(offsets[1]) ?? false,
-    path: reader.readString(offsets[2]),
+    aspectRatio: reader.readFloatOrNull(offsets[0]),
+    dateAdded: reader.readDateTime(offsets[1]),
+    height: reader.readLongOrNull(offsets[2]),
+    isFavorite: reader.readBoolOrNull(offsets[3]) ?? false,
+    path: reader.readString(offsets[4]),
     type:
-        _MediaItemtypeValueEnumMap[reader.readStringOrNull(offsets[3])] ??
+        _MediaItemtypeValueEnumMap[reader.readStringOrNull(offsets[5])] ??
         FileType.image,
+    width: reader.readLongOrNull(offsets[6]),
   );
   object.id = id;
   return object;
@@ -140,15 +153,21 @@ P _mediaItemDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readFloatOrNull(offset)) as P;
     case 1:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
+      return (reader.readDateTime(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 3:
+      return (reader.readBoolOrNull(offset) ?? false) as P;
+    case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
       return (_MediaItemtypeValueEnumMap[reader.readStringOrNull(offset)] ??
               FileType.image)
           as P;
+    case 6:
+      return (reader.readLongOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -534,6 +553,99 @@ extension MediaItemQueryWhere
 
 extension MediaItemQueryFilter
     on QueryBuilder<MediaItem, MediaItem, QFilterCondition> {
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition>
+  aspectRatioIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'aspectRatio'),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition>
+  aspectRatioIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'aspectRatio'),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> aspectRatioEqualTo(
+    double? value, {
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'aspectRatio',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition>
+  aspectRatioGreaterThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'aspectRatio',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> aspectRatioLessThan(
+    double? value, {
+    bool include = false,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'aspectRatio',
+          value: value,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> aspectRatioBetween(
+    double? lower,
+    double? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    double epsilon = Query.epsilon,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'aspectRatio',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+
+          epsilon: epsilon,
+        ),
+      );
+    });
+  }
+
   QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> dateAddedEqualTo(
     DateTime value,
   ) {
@@ -582,6 +694,81 @@ extension MediaItemQueryFilter
       return query.addFilterCondition(
         FilterCondition.between(
           property: r'dateAdded',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> heightIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'height'),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> heightIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'height'),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> heightEqualTo(
+    int? value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'height', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> heightGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'height',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> heightLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'height',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> heightBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'height',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
@@ -951,6 +1138,81 @@ extension MediaItemQueryFilter
       );
     });
   }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> widthIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'width'),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> widthIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'width'),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> widthEqualTo(
+    int? value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'width', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> widthGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'width',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> widthLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'width',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterFilterCondition> widthBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'width',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
 }
 
 extension MediaItemQueryObject
@@ -960,6 +1222,18 @@ extension MediaItemQueryLinks
     on QueryBuilder<MediaItem, MediaItem, QFilterCondition> {}
 
 extension MediaItemQuerySortBy on QueryBuilder<MediaItem, MediaItem, QSortBy> {
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> sortByAspectRatio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aspectRatio', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> sortByAspectRatioDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aspectRatio', Sort.desc);
+    });
+  }
+
   QueryBuilder<MediaItem, MediaItem, QAfterSortBy> sortByDateAdded() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateAdded', Sort.asc);
@@ -969,6 +1243,18 @@ extension MediaItemQuerySortBy on QueryBuilder<MediaItem, MediaItem, QSortBy> {
   QueryBuilder<MediaItem, MediaItem, QAfterSortBy> sortByDateAddedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateAdded', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> sortByHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'height', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> sortByHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'height', Sort.desc);
     });
   }
 
@@ -1007,10 +1293,34 @@ extension MediaItemQuerySortBy on QueryBuilder<MediaItem, MediaItem, QSortBy> {
       return query.addSortBy(r'type', Sort.desc);
     });
   }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> sortByWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'width', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> sortByWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'width', Sort.desc);
+    });
+  }
 }
 
 extension MediaItemQuerySortThenBy
     on QueryBuilder<MediaItem, MediaItem, QSortThenBy> {
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> thenByAspectRatio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aspectRatio', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> thenByAspectRatioDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'aspectRatio', Sort.desc);
+    });
+  }
+
   QueryBuilder<MediaItem, MediaItem, QAfterSortBy> thenByDateAdded() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateAdded', Sort.asc);
@@ -1020,6 +1330,18 @@ extension MediaItemQuerySortThenBy
   QueryBuilder<MediaItem, MediaItem, QAfterSortBy> thenByDateAddedDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'dateAdded', Sort.desc);
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> thenByHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'height', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> thenByHeightDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'height', Sort.desc);
     });
   }
 
@@ -1070,13 +1392,37 @@ extension MediaItemQuerySortThenBy
       return query.addSortBy(r'type', Sort.desc);
     });
   }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> thenByWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'width', Sort.asc);
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QAfterSortBy> thenByWidthDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'width', Sort.desc);
+    });
+  }
 }
 
 extension MediaItemQueryWhereDistinct
     on QueryBuilder<MediaItem, MediaItem, QDistinct> {
+  QueryBuilder<MediaItem, MediaItem, QDistinct> distinctByAspectRatio() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'aspectRatio');
+    });
+  }
+
   QueryBuilder<MediaItem, MediaItem, QDistinct> distinctByDateAdded() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'dateAdded');
+    });
+  }
+
+  QueryBuilder<MediaItem, MediaItem, QDistinct> distinctByHeight() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'height');
     });
   }
 
@@ -1101,6 +1447,12 @@ extension MediaItemQueryWhereDistinct
       return query.addDistinctBy(r'type', caseSensitive: caseSensitive);
     });
   }
+
+  QueryBuilder<MediaItem, MediaItem, QDistinct> distinctByWidth() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'width');
+    });
+  }
 }
 
 extension MediaItemQueryProperty
@@ -1111,9 +1463,21 @@ extension MediaItemQueryProperty
     });
   }
 
+  QueryBuilder<MediaItem, double?, QQueryOperations> aspectRatioProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'aspectRatio');
+    });
+  }
+
   QueryBuilder<MediaItem, DateTime, QQueryOperations> dateAddedProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'dateAdded');
+    });
+  }
+
+  QueryBuilder<MediaItem, int?, QQueryOperations> heightProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'height');
     });
   }
 
@@ -1132,6 +1496,12 @@ extension MediaItemQueryProperty
   QueryBuilder<MediaItem, FileType, QQueryOperations> typeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'type');
+    });
+  }
+
+  QueryBuilder<MediaItem, int?, QQueryOperations> widthProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'width');
     });
   }
 }
