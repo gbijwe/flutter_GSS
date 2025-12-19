@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_buddy/data/media/mediaItem.dart';
@@ -80,7 +81,7 @@ class MediaRepository {
       if (existingItem == null) {
         // It's a new file! Add it.
         final stat = await file.stat();
-        
+
         newItems.add(MediaItem(
           path: path,
           dateAdded: stat.modified, // Updated from modifiedDate
@@ -127,6 +128,6 @@ class MediaRepository {
     } else if (videoExts.contains(extension)) {
       return FileType.video; 
     }
-    return FileType.unknown;
+    return null;
   }
 }

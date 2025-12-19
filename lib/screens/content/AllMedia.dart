@@ -79,7 +79,7 @@ class _AllMediaPageState extends State<AllMediaPage> {
                         child: Text(
                           ".${file.path.split(".").last.toString()} is not supported",
                         ),
-                      ); // Unknown file type
+                      ); // Unknown file type 
                     }
                   },
                 ),

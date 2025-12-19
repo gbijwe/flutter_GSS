@@ -61,6 +61,8 @@ class FileSystemMediaProvider extends ChangeNotifier {
 
       // Sync and Load
       await _repo.syncFromDirectory(_selectedPath!);
+      await getFavorites();
+      await getRecentlyAddedMedia();
       await _refreshList();
     }
   }
