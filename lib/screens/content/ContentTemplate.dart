@@ -26,7 +26,7 @@ class ContentTemplateWidget extends StatelessWidget {
           label: 'Select Source',
           iconData: CupertinoIcons.folder_badge_plus,
           onPressed: () {
-            debugPrint('Select Source pressed');
+            debugPrint('Changing source...');
             mediaActions.pickSourceDirectory();
           },
         ),
@@ -34,8 +34,8 @@ class ContentTemplateWidget extends StatelessWidget {
           label: 'Rescan',
           iconData: CupertinoIcons.arrow_clockwise,
           onPressed: () {
-            debugPrint('Rescan pressed');
-            // mediaActions.loadSavedPath();
+            debugPrint('Rescanning directory...');
+            mediaActions.rescanDirectory();
           },
         ),
         customToolbarItem(

@@ -24,6 +24,14 @@ class MediaRepository {
         .sortByDateAddedDesc() // Updated from sortByModifiedDateDesc
         .findAll();
   }
+
+  Future<List<MediaItem>> getRecentlyAddedMedia() async {
+    final last24Hours = DateTime.now().subtract(Duration(hours: 24)); 
+    return await _isar.mediaItems.filter()
+        .dateAddedGreaterThan(last24Hours, include: true)
+        .sortByDateAddedDesc()
+        .findAll();
+  }
   
   /// Get only Favorites
   Future<List<MediaItem>> getFavorites() async {
@@ -112,13 +120,13 @@ class MediaRepository {
   /// if so, use that instead.
   FileType? _getFileType(String extension) {
     const imageExts = {'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'};
-    const videoExts = {'mp4', 'mov', 'avi', 'mkv', 'webm'};
+    const videoExts = {'mov', 'avi', 'mkv', 'webm'};
 
     if (imageExts.contains(extension)) {
-      return FileType.image; // Assuming your enum has .image
+      return FileType.image; 
     } else if (videoExts.contains(extension)) {
-      return FileType.video; // Assuming your enum has .video
+      return FileType.video; 
     }
-    return null; // Not supported
+    return FileType.unknown;
   }
 }

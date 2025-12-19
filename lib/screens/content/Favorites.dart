@@ -31,33 +31,36 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   Widget _buildRecentlyAddedContentArea() {
     final mediaProvider = context.watch<FileSystemMediaProvider>();
+    final favorites = mediaProvider.favoriteMediaFiles;
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Expanded(
-          child: mediaProvider.favoriteMediaFiles.isEmpty
+          child: favorites.isEmpty
               ? Center(child: Text("No media found or no directory selected"))
               : GridView.builder(
-                  itemCount: mediaProvider.favoriteMediaFiles.length,
+                  itemCount: favorites.length,
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 100,
                   ),
                   itemBuilder: (context, index) {
-                    final file = mediaProvider.favoriteMediaFiles[index];
+                    final file = favorites[index];
 
                     if (file.type == FileType.video) {
                       return VideoThumbnailTile(
                         videoPath: file.path,
                         width: 100,
                         height: 100,
+                        isFavorite: file.isFavorite,
                       );
                     } else if (file.type == FileType.image) {
                       return ImageThumbnailWidget(
                         path: file.path,
                         id: file.id,
                         isFavorite: file.isFavorite,
+                        onTap: () {},
                       );
                     } else {
                       return Center(

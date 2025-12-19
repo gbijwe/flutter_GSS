@@ -49,13 +49,31 @@ class _AllMediaPageState extends State<AllMediaPage> {
                     ;
 
                     if (file.type == FileType.video) {
-                      return VideoThumbnailTile(
-                        videoPath: file.path,
-                        width: 100,
-                        height: 100,
+                      return Selector<FileSystemMediaProvider,bool>(
+                        selector: (_, p) => p.isFavorite(file.id),
+                        builder: (_, isFavorite, __) => VideoThumbnailTile(
+                          videoPath: file.path,
+                          width: 100,
+                          height: 100,
+                          isFavorite: isFavorite,
+                          onTap: () => mediaProvider.toggleFavorite(file.id),
+                        ),
                       );
                     } else if (file.type == FileType.image) {
-                      return ImageThumbnailWidget(path: file.path, id: file.id, isFavorite: file.isFavorite);
+                      return Selector<FileSystemMediaProvider, bool>(
+                        selector: (_, p) => p.isFavorite(file.id),
+                        builder: (context, isFavorite, child) {
+                          return ImageThumbnailWidget(
+                            path: file.path,
+                            id: file.id,
+                            isFavorite: isFavorite,
+                            onTap: () {
+                              mediaProvider.toggleFavorite(file.id);
+                              debugPrint("Toggled favorite for id: ${file.id}");
+                            },
+                          );
+                        },
+                      );
                     } else {
                       return Center(
                         child: Text(

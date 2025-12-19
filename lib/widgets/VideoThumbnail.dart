@@ -10,12 +10,16 @@ class VideoThumbnailTile extends StatefulWidget {
   final String videoPath;
   final double width;
   final double height;
+  final bool isFavorite;
+  final VoidCallback? onTap;
 
   const VideoThumbnailTile({
     super.key,
     required this.videoPath,
     this.width = 200,
     this.height = 200,
+    this.isFavorite = false,
+    this.onTap,
   });
 
   @override
@@ -64,7 +68,9 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
       }
       return null;
     } catch (e) {
-      debugPrint("Error generating thumbnail: $e. File path: ${widget.videoPath}");
+      debugPrint(
+        "Error generating thumbnail: $e. File path: ${widget.videoPath}",
+      );
       return null;
     }
   }
@@ -87,6 +93,7 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
             child: Stack(
               fit: StackFit.expand,
               clipBehavior: Clip.antiAlias,
+              alignment: AlignmentDirectional.bottomEnd,
               children: [
                 Image.file(
                   snapshot.data!,
@@ -101,6 +108,31 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
                       CupertinoIcons.play_circle_fill,
                       color: CupertinoColors.white.withAlpha(100),
                       size: 40,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 0.0, 
+                  bottom: 0.0,
+                  child: GestureDetector(
+                    onTap: widget.onTap,
+                    child: Container(
+                      padding: EdgeInsets.all(2),
+                      // decoration: BoxDecoration(
+                      //   color: CupertinoColors.black.withAlpha(15),
+                      //   borderRadius: BorderRadius.circular(4),
+                      // ),
+                      child: widget.isFavorite
+                          ? Icon(
+                              CupertinoIcons.heart_fill,
+                              color: CupertinoColors.systemRed,
+                              size: 16,
+                            )
+                          : Icon(
+                              CupertinoIcons.heart,
+                              color: CupertinoColors.white,
+                              size: 16,
+                            ),
                     ),
                   ),
                 ),

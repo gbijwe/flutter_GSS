@@ -12,7 +12,7 @@ MacosScaffold defaultToolBarScaffold({
 }) {
   return MacosScaffold(
     toolBar: ToolBar(
-      title: RichText(text: TextSpan(text: "$title\n$source",), maxLines: 2, overflow: TextOverflow.ellipsis,),
+      title: RichText(text: TextSpan(text: "$title\n$source", style: TextStyle(color: MacosColors.controlTextColor)), maxLines: 2, overflow: TextOverflow.ellipsis,),
       actions: actions,
       titleWidth: titleWidth,
       centerTitle: centerTitle,

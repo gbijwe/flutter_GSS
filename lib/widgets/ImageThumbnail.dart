@@ -2,26 +2,24 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
-import 'package:provider/provider.dart';
 
 class ImageThumbnailWidget extends StatelessWidget {
-  const ImageThumbnailWidget({
+  ImageThumbnailWidget({
     super.key,
     required this.path,
     required this.id,
     required this.isFavorite,
+    required this.onTap,
   });
 
   // final FileSystemEntity file;
   final String path;
   final int id;
   final bool isFavorite;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final mediaActions = context.read<FileSystemMediaProvider>();
-    final mediaWatcher = context.watch<FileSystemMediaProvider>();
 
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
@@ -42,7 +40,7 @@ class ImageThumbnailWidget extends StatelessWidget {
           ),
 
           GestureDetector(
-            onTap: () => mediaActions.toggleFavorite(id),
+            onTap: onTap,
             child: Container(
               padding: EdgeInsets.all(2),
               // decoration: BoxDecoration(
