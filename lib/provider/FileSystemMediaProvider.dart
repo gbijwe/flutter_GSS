@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:file_selector/file_selector.dart';
-import 'package:photo_buddy/data/media/mediaItem.dart';
+import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/data/repo/mediaRepo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;

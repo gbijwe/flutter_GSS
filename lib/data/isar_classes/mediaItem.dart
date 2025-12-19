@@ -4,6 +4,7 @@ import 'package:photo_buddy/helpers/FileTypeChecker.dart';
 part 'mediaItem.g.dart';
 
 @collection
+@Name("MediaFiles")
 class MediaItem {
   Id id = Isar.autoIncrement;
 
