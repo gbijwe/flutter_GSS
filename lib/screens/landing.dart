@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
 import 'package:photo_buddy/screens/content/AllMedia.dart';
 import 'package:photo_buddy/screens/content/Favorites.dart';
@@ -172,6 +173,8 @@ class _LandingScreenState extends State<LandingScreen> {
               setState(() {
                 pageIdx = i;
               });
+              // clear selections on page change
+              context.read<FileSelectionActionProvider>().clearSelection();
             },
           );
         },
