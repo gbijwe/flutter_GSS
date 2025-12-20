@@ -1,0 +1,82 @@
+import 'package:isar_community/isar.dart';
+import 'package:photo_buddy/data/isar_classes/folder.dart';
+
+class FolderRepository {
+  late Isar _isar;
+  void setIsar(Isar isar) {
+    _isar = isar;
+  }
+
+  /// Get all folders
+  Future<List<Folder>> getAllFolders() async {
+    return await _isar.folders.where().sortByCreatedAtDesc().findAll();
+  }
+
+  /// Create a new folder
+  Future<int> createFolder({
+    required String name,
+    String? sourceDirectory,
+    String? color,
+  }) async {
+    final folder = Folder(
+      name: name,
+      sourceDirectory: sourceDirectory,
+      color: color,
+    );
+
+    return await _isar.writeTxn(() async {
+      return await _isar.folders.put(folder);
+    });
+  }
+
+  /// Add media items to folder
+  Future<void> addMediaToFolder(int folderId, List<int> mediaItemIds) async {
+    await _isar.writeTxn(() async {
+      final folder = await _isar.folders.get(folderId);
+      if (folder != null) {
+        // Add without duplicates
+        final existingIds = folder.mediaItemIds.toSet();
+        existingIds.addAll(mediaItemIds);
+        folder.mediaItemIds = existingIds.toList();
+        await _isar.folders.put(folder);
+      }
+    });
+  }
+
+  /// Remove media items from folder
+  Future<void> removeMediaFromFolder(
+    int folderId,
+    List<int> mediaItemIds,
+  ) async {
+    await _isar.writeTxn(() async {
+      final folder = await _isar.folders.get(folderId);
+      if (folder != null) {
+        folder.mediaItemIds.removeWhere((id) => mediaItemIds.contains(id));
+        await _isar.folders.put(folder);
+      }
+    });
+  }
+
+  /// Delete folder
+  Future<bool> deleteFolder(int folderId) async {
+    return await _isar.writeTxn(() async {
+      return await _isar.folders.delete(folderId);
+    });
+  }
+
+  /// Rename folder
+  Future<void> renameFolder(int folderId, String newName) async {
+    await _isar.writeTxn(() async {
+      final folder = await _isar.folders.get(folderId);
+      if (folder != null) {
+        folder.name = newName;
+        await _isar.folders.put(folder);
+      }
+    });
+  }
+
+  /// Get folder by ID
+  Future<Folder?> getFolderById(int folderId) async {
+    return await _isar.folders.get(folderId);
+  }
+}

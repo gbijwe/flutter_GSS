@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:photo_buddy/provider/FolderMediaProvider.dart';
 import 'package:photo_buddy/screens/content/AllMedia.dart';
 import 'package:photo_buddy/screens/content/Favorites.dart';
 import 'package:photo_buddy/screens/content/People.dart';
@@ -8,7 +9,10 @@ import 'package:photo_buddy/screens/content/Timeline.dart';
 import 'package:photo_buddy/screens/content/filterMediaTypes/Panaromas.dart';
 import 'package:photo_buddy/screens/content/filterMediaTypes/Photos.dart';
 import 'package:photo_buddy/screens/content/filterMediaTypes/Videos.dart';
+import 'package:photo_buddy/screens/content/folders/FolderPage.dart';
+import 'package:photo_buddy/widgets/CreateFolderDialog.dart';
 import 'package:photo_buddy/widgets/CustomSideBarItem.dart';
+import 'package:provider/provider.dart';
 
 class LandingScreen extends StatefulWidget {
   const LandingScreen({super.key});
@@ -44,17 +48,24 @@ class _LandingScreenState extends State<LandingScreen> {
         return Center(child: Text('Portraits'));
       case 10:
         return PanaromasPage();
-      case 11:
-        return Center(child: Text('New folder 1'));
-      case 12:
-        return Center(child: Text('New folder 2'));
       default:
+        final folderIdx = pageIdx - 11;
+        final folders = context.read<FolderMediaProvider>().folders;
+        if (folderIdx >= 0 && folderIdx < folders.length) {
+          final folder = folders[folderIdx];
+          return FolderPage(
+            folderId: folder.id,
+            folderName: folder.name,
+          );
+        }
         return Center(child: Text('Select an item'));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final folders = context.watch<FolderMediaProvider>().folders;
+
     return MacosWindow(
       titleBar: null,
       sidebar: Sidebar(
@@ -124,21 +135,36 @@ class _LandingScreenState extends State<LandingScreen> {
                   ),
                 ],
               ),
+
               SidebarItem(
                 label: Text("Folders"),
                 expandDisclosureItems: true,
                 disclosureItems: [
-                  customSideBarItem(
-                    label: 'New folder 1',
-                    iconData: CupertinoIcons.folder,
-                    isSelected: pageIdx == 11,
-                  ),
-                  customSideBarItem(
-                    label: 'New folder 2',
-                    iconData: CupertinoIcons.folder,
-                    isSelected: pageIdx == 12,
-                  ),
+                  ...folders.asMap().entries.map((folder) {
+                    final idx = folder.key;
+                    final folderItem = folder.value;
+                    final folderPageIdx = 11 + idx;
+
+                    return customSideBarItem(
+                      label: folderItem.name,
+                      iconData: CupertinoIcons.folder,
+                      isSelected: pageIdx == folderPageIdx,
+                    );
+                  }),
                 ],
+                trailing: GestureDetector(
+                  onTap: () {
+                    showMacosAlertDialog(
+                      context: context,
+                      builder: (context) => CreateFolderDialog(),
+                    );
+                  },
+                  child: MacosIcon(
+                    CupertinoIcons.folder_badge_plus,
+                    color: MacosColors.black,
+                    size: 16.0,
+                  ),
+                ),
               ),
             ],
             currentIndex: pageIdx,

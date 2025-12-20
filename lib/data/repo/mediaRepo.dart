@@ -4,6 +4,7 @@ import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:photo_buddy/data/isar_classes/folder.dart';
 import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
 
@@ -15,7 +16,7 @@ class MediaRepository {
     final dir = await getApplicationDocumentsDirectory();
 
     // Open Isar with the schema
-    _isar = await Isar.open([MediaItemSchema], directory: dir.path);
+    _isar = await Isar.open([MediaItemSchema, FolderSchema], directory: dir.path);
   }
 
   /// Get all items sorted by DateAdded (Fast)
@@ -155,4 +156,6 @@ class MediaRepository {
     }
     return null;
   }
+
+  Isar get isar => _isar;
 }

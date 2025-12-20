@@ -114,4 +114,6 @@ class FileSystemMediaProvider extends ChangeNotifier {
     _favoriteMediaFiles = await _repo.getFavorites();
     notifyListeners();
   }
+
+  MediaRepository get mediaRepo => _repo;
 }

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
+import 'package:photo_buddy/provider/FolderMediaProvider.dart';
 import 'package:photo_buddy/screens/landing.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,12 @@ void main() async {
     MultiProvider(
       providers: [
         // ChangeNotifierProvider(create: (_) => FileSystemMediaProvider()..loadSavedPath()),
-        ChangeNotifierProvider.value(value: mediaProvider)
+        ChangeNotifierProvider.value(value: mediaProvider),
+        ChangeNotifierProxyProvider<FileSystemMediaProvider, FolderMediaProvider>(
+          create: (context) => FolderMediaProvider(mediaProvider.mediaRepo),
+          update: (context, mediaProvider, previous) =>
+              previous ?? FolderMediaProvider(mediaProvider.mediaRepo),
+        ),
       ],
       child: const MainApp(),
     ),

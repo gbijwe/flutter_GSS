@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 
 class ImageThumbnailWidget extends StatelessWidget {
-  ImageThumbnailWidget({
+  const ImageThumbnailWidget({
     super.key,
     required this.path,
     required this.id,
