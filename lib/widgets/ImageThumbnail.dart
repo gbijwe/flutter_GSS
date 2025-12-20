@@ -12,6 +12,7 @@ class ImageThumbnailWidget extends StatelessWidget {
     required this.id,
     required this.isFavorite,
     required this.onDoubleTap,
+    required this.favoriteTap,
     this.isSelected = false,
     this.onLongPress, 
   });
@@ -22,13 +23,14 @@ class ImageThumbnailWidget extends StatelessWidget {
   final bool isFavorite;
   final bool isSelected;
   final VoidCallback onDoubleTap;
+  final VoidCallback favoriteTap;
   final VoidCallback? onLongPress;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: null, // add a preview mechanism
-      onDoubleTap: onDoubleTap, // favorite this files
+      onDoubleTap: onDoubleTap, // open preview
       onLongPress: onLongPress, // select this file
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
@@ -61,19 +63,22 @@ class ImageThumbnailWidget extends StatelessWidget {
             Positioned(
               right: 2.0, 
               bottom: 2.0,
-              child: Container(
-                padding: EdgeInsets.all(2),
-                child: isFavorite
-                    ? Icon(
-                        CupertinoIcons.heart_fill,
-                        color: CupertinoColors.systemRed,
-                        size: 16,
-                      )
-                    : Icon(
-                        CupertinoIcons.heart,
-                        color: CupertinoColors.white,
-                        size: 16,
-                      ),
+              child: GestureDetector(
+                onTap: favoriteTap,
+                child: Container(
+                  padding: EdgeInsets.all(2),
+                  child: isFavorite
+                      ? Icon(
+                          CupertinoIcons.heart_fill,
+                          color: CupertinoColors.systemRed,
+                          size: 16,
+                        )
+                      : Icon(
+                          CupertinoIcons.heart,
+                          color: CupertinoColors.white,
+                          size: 16,
+                        ),
+                ),
               ),
             ),
 

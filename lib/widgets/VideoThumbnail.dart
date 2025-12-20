@@ -12,7 +12,7 @@ class VideoThumbnailTile extends StatefulWidget {
   final double height;
   final bool isFavorite;
   final bool isSelected;
-  final VoidCallback? onTap;
+  final VoidCallback? favoriteTap;
   final VoidCallback? onDoubleTap;
   final VoidCallback? onLongPress;
 
@@ -23,7 +23,7 @@ class VideoThumbnailTile extends StatefulWidget {
     this.height = 200,
     this.isFavorite = false,
     this.isSelected = false,
-    this.onTap,
+    this.favoriteTap,
     this.onDoubleTap,
     this.onLongPress,
   });
@@ -90,8 +90,8 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
             snapshot.data != null) {
           // SUCCESS: Show the generated image
           return GestureDetector(
-            onTap: widget.onTap, // for preview
-            onDoubleTap: widget.onDoubleTap, // for favorite toggle
+            onTap: null,
+            onDoubleTap: widget.onDoubleTap, // for preview
             onLongPress: widget.onLongPress, // for selection
             child: Container(
               margin: EdgeInsets.all(2),
@@ -124,23 +124,26 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
                   Positioned(
                     right: 2.0,
                     bottom: 2.0,
-                    child: Container(
-                      padding: EdgeInsets.all(2),
-                      // decoration: BoxDecoration(
-                      //   color: CupertinoColors.black.withAlpha(15),
-                      //   borderRadius: BorderRadius.circular(4),
-                      // ),
-                      child: widget.isFavorite
-                          ? Icon(
-                              CupertinoIcons.heart_fill,
-                              color: CupertinoColors.systemRed,
-                              size: 16,
-                            )
-                          : Icon(
-                              CupertinoIcons.heart,
-                              color: CupertinoColors.white,
-                              size: 16,
-                            ),
+                    child: GestureDetector(
+                      onTap: widget.favoriteTap,
+                      child: Container(
+                        padding: EdgeInsets.all(2),
+                        // decoration: BoxDecoration(
+                        //   color: CupertinoColors.black.withAlpha(15),
+                        //   borderRadius: BorderRadius.circular(4),
+                        // ),
+                        child: widget.isFavorite
+                            ? Icon(
+                                CupertinoIcons.heart_fill,
+                                color: CupertinoColors.systemRed,
+                                size: 16,
+                              )
+                            : Icon(
+                                CupertinoIcons.heart,
+                                color: CupertinoColors.white,
+                                size: 16,
+                              ),
+                      ),
                     ),
                   ),
 

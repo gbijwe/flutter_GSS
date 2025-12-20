@@ -57,7 +57,7 @@ class _FolderPageState extends State<FolderPage> {
     if (isLoading) {
       return Center(child: ProgressCircle());
     }
-
+    final mediaProvider = context.read<FileSystemMediaProvider>();
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -82,7 +82,7 @@ class _FolderPageState extends State<FolderPage> {
                           width: 100,
                           height: 100,
                           isFavorite: isFavorite,
-                          onTap: () => null,
+                          favoriteTap: () => mediaProvider.toggleFavorite(file.id),
                         ),
                       );
                     } else if (file.type == FileType.image) {
@@ -94,6 +94,10 @@ class _FolderPageState extends State<FolderPage> {
                             id: file.id,
                             isFavorite: isFavorite,
                             onDoubleTap: () {},
+                            favoriteTap: () {
+                              mediaProvider.toggleFavorite(file.id);
+                              debugPrint("Toggled favorite for id: ${file.id}");
+                            },
                           );
                         },
                       );

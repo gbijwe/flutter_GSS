@@ -64,7 +64,7 @@ class _AllMediaPageState extends State<AllMediaPage> {
                           isSelected: selectionStatusProvider.isFileSelected(
                             file.id,
                           ),
-                          onDoubleTap: () {
+                          favoriteTap: () {
                             mediaProvider.toggleFavorite(file.id);
                             debugPrint("Toggled favorite for id: ${file.id}");
                           },
@@ -86,7 +86,8 @@ class _AllMediaPageState extends State<AllMediaPage> {
                             isSelected: selectionStatusProvider.isFileSelected(
                               file.id,
                             ),
-                            onDoubleTap: () {
+                            onDoubleTap: () {},
+                            favoriteTap: () {
                               mediaProvider.toggleFavorite(file.id);
                               debugPrint("Toggled favorite for id: ${file.id}");
                             },

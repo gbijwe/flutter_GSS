@@ -60,7 +60,7 @@ class _PhotosPageState extends State<PhotosPage> {
                           width: 100,
                           height: 100,
                           isFavorite: isFavorite,
-                          onTap: () => mediaProvider.toggleFavorite(file.id),
+                          favoriteTap: () => mediaProvider.toggleFavorite(file.id),
                         ),
                       );
                     } else if (file.type == FileType.image) {
@@ -74,7 +74,8 @@ class _PhotosPageState extends State<PhotosPage> {
                             isSelected: selectionStatusProvider.isFileSelected(
                               file.id,
                             ),
-                            onDoubleTap: () {
+                            onDoubleTap: () {},
+                            favoriteTap: () {
                               mediaProvider.toggleFavorite(file.id);
                               debugPrint("Toggled favorite for id: ${file.id}");
                             },
