@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
+import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/screens/content/ContentTemplate.dart';
 import 'package:photo_buddy/widgets/ImageThumbnail.dart';
@@ -32,6 +33,9 @@ class _VideosPageState extends State<VideosPage> {
   Widget _buildRecentlyAddedContentArea() {
     final mediaProvider = context.watch<FileSystemMediaProvider>();
     final videos = mediaProvider.videoFilesOnly;
+    final selectionActionProvider = context.read<FileSelectionActionProvider>();
+    final selectionStatusProvider = context
+        .watch<FileSelectionActionProvider>();
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -49,7 +53,7 @@ class _VideosPageState extends State<VideosPage> {
                     final file = videos[index];
 
                     if (file.type == FileType.video) {
-                      return Selector<FileSystemMediaProvider,bool>(
+                      return Selector<FileSystemMediaProvider, bool>(
                         selector: (_, p) => p.isFavorite(file.id),
                         builder: (_, isFavorite, __) => VideoThumbnailTile(
                           videoPath: file.path,
@@ -67,9 +71,17 @@ class _VideosPageState extends State<VideosPage> {
                             path: file.path,
                             id: file.id,
                             isFavorite: isFavorite,
-                            onTap: () {
+                            isSelected: selectionStatusProvider.isFileSelected(
+                              file.id,
+                            ),
+                            onDoubleTap: () {
                               mediaProvider.toggleFavorite(file.id);
                               debugPrint("Toggled favorite for id: ${file.id}");
+                            },
+                            onLongPress: () {
+                              selectionActionProvider.toggleFileSelection(
+                                file.id,
+                              );
                             },
                           );
                         },

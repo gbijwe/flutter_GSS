@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
+import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/screens/content/ContentTemplate.dart';
 import 'package:photo_buddy/widgets/ImageThumbnail.dart';
@@ -33,6 +34,9 @@ class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
   Widget _buildRecentlyAddedContentArea() {
     final mediaProvider = context.watch<FileSystemMediaProvider>();
     final recentlyAdded = mediaProvider.recentlyAddedMediaFiles;
+    final selectionActionProvider = context.read<FileSelectionActionProvider>();
+    final selectionStatusProvider = context
+        .watch<FileSelectionActionProvider>();
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -65,7 +69,18 @@ class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
                           width: 100,
                           height: 100,
                           isFavorite: isFavorite,
-                          onTap: () => mediaProvider.toggleFavorite(file.id),
+                          isSelected: selectionStatusProvider.isFileSelected(
+                            file.id,
+                          ),
+                          onDoubleTap: () {
+                            mediaProvider.toggleFavorite(file.id);
+                            debugPrint("Toggled favorite for id: ${file.id}");
+                          },
+                          onLongPress: () {
+                            selectionActionProvider.toggleFileSelection(
+                              file.id,
+                            );
+                          },
                         ),
                       );
                     } else if (file.type == FileType.image) {
@@ -76,9 +91,17 @@ class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
                             path: file.path,
                             id: file.id,
                             isFavorite: isFavorite,
-                            onTap: () {
+                            isSelected: selectionStatusProvider.isFileSelected(
+                              file.id,
+                            ),
+                            onDoubleTap: () {
                               mediaProvider.toggleFavorite(file.id);
                               debugPrint("Toggled favorite for id: ${file.id}");
+                            },
+                            onLongPress: () {
+                              selectionActionProvider.toggleFileSelection(
+                                file.id,
+                              );
                             },
                           );
                         },

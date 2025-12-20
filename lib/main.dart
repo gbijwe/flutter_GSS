@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
 import 'package:photo_buddy/screens/landing.dart';
@@ -33,6 +34,7 @@ void main() async {
           update: (context, mediaProvider, previous) =>
               previous ?? FolderMediaProvider(mediaProvider.mediaRepo),
         ),
+        ChangeNotifierProvider(create: (_) => FileSelectionActionProvider()),
       ],
       child: const MainApp(),
     ),

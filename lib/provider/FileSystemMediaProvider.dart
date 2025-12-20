@@ -14,6 +14,7 @@ class FileSystemMediaProvider extends ChangeNotifier {
   List<MediaItem> _favoriteMediaFiles = [];
   String? _selectedPath;
 
+  // getters
   List<MediaItem> get mediaFiles => _mediaFiles;
   List<MediaItem> get recentlyAddedMediaFiles => _recentlyAddedMediaFiles;
   List<MediaItem> get favoriteMediaFiles => _favoriteMediaFiles;
@@ -21,6 +22,7 @@ class FileSystemMediaProvider extends ChangeNotifier {
   List<MediaItem> get imageFilesOnly => _mediaFiles.where((file) => file.type == FileType.image).toList();
   List<MediaItem> get videoFilesOnly => _mediaFiles.where((file) => file.type == FileType.video).toList();
 
+  // get current source path 
   String? get currentPath => _selectedPath;
 
   // Initialize DB and load previous state
@@ -40,6 +42,8 @@ class FileSystemMediaProvider extends ChangeNotifier {
       await getRecentlyAddedMedia();
       // 2. Sync in background to find new files
       _repo.syncFromDirectory(savedPath).then((_) {
+        getFavorites();
+        getRecentlyAddedMedia();
         _refreshList(); // Update UI after sync finishes
       });
     }
@@ -115,5 +119,6 @@ class FileSystemMediaProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // MediaRepository getter to be used by FolderRepository
   MediaRepository get mediaRepo => _repo;
 }

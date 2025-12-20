@@ -93,7 +93,7 @@ class _FolderPageState extends State<FolderPage> {
                             path: file.path,
                             id: file.id,
                             isFavorite: isFavorite,
-                            onTap: () {},
+                            onDoubleTap: () {},
                           );
                         },
                       );

@@ -11,7 +11,10 @@ class VideoThumbnailTile extends StatefulWidget {
   final double width;
   final double height;
   final bool isFavorite;
+  final bool isSelected;
   final VoidCallback? onTap;
+  final VoidCallback? onDoubleTap;
+  final VoidCallback? onLongPress;
 
   const VideoThumbnailTile({
     super.key,
@@ -19,7 +22,10 @@ class VideoThumbnailTile extends StatefulWidget {
     this.width = 200,
     this.height = 200,
     this.isFavorite = false,
+    this.isSelected = false,
     this.onTap,
+    this.onDoubleTap,
+    this.onLongPress,
   });
 
   @override
@@ -83,39 +89,41 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
         if (snapshot.connectionState == ConnectionState.done &&
             snapshot.data != null) {
           // SUCCESS: Show the generated image
-          return Container(
-            margin: EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              border: Border.all(color: MacosColors.transparent),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Stack(
-              fit: StackFit.expand,
+          return GestureDetector(
+            onTap: widget.onTap, // for preview
+            onDoubleTap: widget.onDoubleTap, // for favorite toggle
+            onLongPress: widget.onLongPress, // for selection
+            child: Container(
+              margin: EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                border: Border.all(color: widget.isSelected ? CupertinoColors.activeBlue : MacosColors.transparent),
+                borderRadius: BorderRadius.circular(8),
+              ),
               clipBehavior: Clip.antiAlias,
-              alignment: AlignmentDirectional.bottomEnd,
-              children: [
-                Image.file(
-                  snapshot.data!,
-                  fit: BoxFit.cover,
-                  cacheWidth: widget.width.toInt(), // Memory optimization
-                ),
-                // Play Icon Overlay
-                Container(
-                  color: CupertinoColors.black.withAlpha(10),
-                  child: Center(
-                    child: Icon(
-                      CupertinoIcons.play_circle_fill,
-                      color: CupertinoColors.white.withAlpha(100),
-                      size: 40,
+              child: Stack(
+                fit: StackFit.expand,
+                clipBehavior: Clip.antiAlias,
+                alignment: AlignmentDirectional.bottomEnd,
+                children: [
+                  Image.file(
+                    snapshot.data!,
+                    fit: BoxFit.cover,
+                    cacheWidth: widget.width.toInt(), // Memory optimization
+                  ),
+                  // Play Icon Overlay
+                  Container(
+                    color: CupertinoColors.black.withAlpha(10),
+                    child: Center(
+                      child: Icon(
+                        CupertinoIcons.play_circle_fill,
+                        color: CupertinoColors.white.withAlpha(100),
+                        size: 40,
+                      ),
                     ),
                   ),
-                ),
-                Positioned(
-                  right: 0.0, 
-                  bottom: 0.0,
-                  child: GestureDetector(
-                    onTap: widget.onTap,
+                  Positioned(
+                    right: 2.0,
+                    bottom: 2.0,
                     child: Container(
                       padding: EdgeInsets.all(2),
                       // decoration: BoxDecoration(
@@ -135,8 +143,24 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
                             ),
                     ),
                   ),
-                ),
-              ],
+
+                  // Selection Overlay
+                  Positioned(
+                    left: 2.0,
+                    top: 2.0,
+                    child: Container(
+                      padding: EdgeInsets.all(2),
+                      child: widget.isSelected
+                          ? Icon(
+                              CupertinoIcons.check_mark_circled_solid,
+                              color: CupertinoColors.activeBlue,
+                              size: 16,
+                            )
+                          : null,
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         } else {
