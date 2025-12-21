@@ -15,13 +15,11 @@ class FolderRepository {
   /// Create a new folder
   Future<int> createFolder({
     required String name,
-    String? sourceDirectory,
-    String? color,
+    required String sourceDirectory,
   }) async {
     final folder = Folder(
       name: name,
       sourceDirectory: sourceDirectory,
-      color: color,
     );
 
     return await _isar.writeTxn(() async {

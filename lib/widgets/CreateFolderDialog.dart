@@ -19,11 +19,21 @@ class _CreateFolderDialogState extends State<CreateFolderDialog> {
       appIcon: const MacosIcon(CupertinoIcons.folder_badge_plus),
       title: const Text('Create New Folder'),
       message: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           const SizedBox(height: 16),
-          MacosTextField(
-            controller: _nameController,
-            placeholder: 'Folder name',
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text('Name'),
+              Flexible(
+                child: MacosTextField(
+                  controller: _nameController,
+                  placeholder: 'Folder name',
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -102,6 +102,7 @@ class _LandingScreenState extends State<LandingScreen> {
               ),
               SidebarItem(
                 label: Text("Media Types"),
+                section: true,
                 expandDisclosureItems: true,
                 disclosureItems: [
                   customSideBarItem(
@@ -139,6 +140,7 @@ class _LandingScreenState extends State<LandingScreen> {
 
               SidebarItem(
                 label: Text("Folders"),
+                section: true,
                 expandDisclosureItems: true,
                 disclosureItems: [
                   ...folders.asMap().entries.map((folder) {
@@ -162,7 +164,7 @@ class _LandingScreenState extends State<LandingScreen> {
                   },
                   child: MacosIcon(
                     CupertinoIcons.plus,
-                    color: MacosColors.black,
+                    color: MacosColors.black.withAlpha(75),
                     size: 16.0,
                   ),
                 ),

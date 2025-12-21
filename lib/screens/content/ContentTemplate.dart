@@ -80,6 +80,7 @@ class ContentTemplateWidget extends StatelessWidget {
           ),
           customDropdownToolbarItem(
             label: 'Add to folder', 
+            iconData: CupertinoIcons.folder,
             dropdownItems: dropdownItems, color: CupertinoColors.black),
           customToolbarItem(
             label: 'Cancel',

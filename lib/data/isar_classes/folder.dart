@@ -7,6 +7,7 @@ part 'folder.g.dart';
 class Folder {
   Id id = Isar.autoIncrement;
 
+  @Index(unique: true)
   String name;
 
   DateTime? createdAt;
@@ -15,16 +16,12 @@ class Folder {
   List<int> mediaItemIds = [];
 
   // Optional: source directory this folder belongs to
-  String? sourceDirectory;
-
-  // Optional: color or icon for visual distinction
-  String? color;
+  String sourceDirectory;
 
   Folder({
     required this.name,
     DateTime? createdAt,
     this.mediaItemIds = const [],
-    this.sourceDirectory,
-    this.color,
+    required this.sourceDirectory,
   }) : createdAt = createdAt ?? DateTime.now();
 }

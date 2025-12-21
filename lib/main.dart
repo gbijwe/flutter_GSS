@@ -10,7 +10,9 @@ import 'package:photo_buddy/screens/landing.dart';
 import 'package:provider/provider.dart';
 
 Future<void> _configureMacosWindowUtils() async {
-  const config = MacosWindowUtilsConfig();
+  const config = MacosWindowUtilsConfig(
+    toolbarStyle: NSWindowToolbarStyle.unified
+  );
   await config.apply();
 }
 

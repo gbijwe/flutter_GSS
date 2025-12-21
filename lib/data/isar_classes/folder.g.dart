@@ -17,20 +17,19 @@ const FolderSchema = CollectionSchema(
   name: r'Folders',
   id: 7069318359095368427,
   properties: {
-    r'color': PropertySchema(id: 0, name: r'color', type: IsarType.string),
     r'createdAt': PropertySchema(
-      id: 1,
+      id: 0,
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
     r'mediaItemIds': PropertySchema(
-      id: 2,
+      id: 1,
       name: r'mediaItemIds',
       type: IsarType.longList,
     ),
-    r'name': PropertySchema(id: 3, name: r'name', type: IsarType.string),
+    r'name': PropertySchema(id: 2, name: r'name', type: IsarType.string),
     r'sourceDirectory': PropertySchema(
-      id: 4,
+      id: 3,
       name: r'sourceDirectory',
       type: IsarType.string,
     ),
@@ -41,7 +40,21 @@ const FolderSchema = CollectionSchema(
   deserialize: _folderDeserialize,
   deserializeProp: _folderDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'name': IndexSchema(
+      id: 879695947855722453,
+      name: r'name',
+      unique: true,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'name',
+          type: IndexType.hash,
+          caseSensitive: true,
+        ),
+      ],
+    ),
+  },
   links: {},
   embeddedSchemas: {},
 
@@ -57,20 +70,9 @@ int _folderEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  {
-    final value = object.color;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
   bytesCount += 3 + object.mediaItemIds.length * 8;
   bytesCount += 3 + object.name.length * 3;
-  {
-    final value = object.sourceDirectory;
-    if (value != null) {
-      bytesCount += 3 + value.length * 3;
-    }
-  }
+  bytesCount += 3 + object.sourceDirectory.length * 3;
   return bytesCount;
 }
 
@@ -80,11 +82,10 @@ void _folderSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.color);
-  writer.writeDateTime(offsets[1], object.createdAt);
-  writer.writeLongList(offsets[2], object.mediaItemIds);
-  writer.writeString(offsets[3], object.name);
-  writer.writeString(offsets[4], object.sourceDirectory);
+  writer.writeDateTime(offsets[0], object.createdAt);
+  writer.writeLongList(offsets[1], object.mediaItemIds);
+  writer.writeString(offsets[2], object.name);
+  writer.writeString(offsets[3], object.sourceDirectory);
 }
 
 Folder _folderDeserialize(
@@ -94,11 +95,10 @@ Folder _folderDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Folder(
-    color: reader.readStringOrNull(offsets[0]),
-    createdAt: reader.readDateTimeOrNull(offsets[1]),
-    mediaItemIds: reader.readLongList(offsets[2]) ?? const [],
-    name: reader.readString(offsets[3]),
-    sourceDirectory: reader.readStringOrNull(offsets[4]),
+    createdAt: reader.readDateTimeOrNull(offsets[0]),
+    mediaItemIds: reader.readLongList(offsets[1]) ?? const [],
+    name: reader.readString(offsets[2]),
+    sourceDirectory: reader.readString(offsets[3]),
   );
   object.id = id;
   return object;
@@ -112,15 +112,13 @@ P _folderDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringOrNull(offset)) as P;
-    case 1:
       return (reader.readDateTimeOrNull(offset)) as P;
-    case 2:
+    case 1:
       return (reader.readLongList(offset) ?? const []) as P;
+    case 2:
+      return (reader.readString(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
-    case 4:
-      return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -136,6 +134,60 @@ List<IsarLinkBase<dynamic>> _folderGetLinks(Folder object) {
 
 void _folderAttach(IsarCollection<dynamic> col, Id id, Folder object) {
   object.id = id;
+}
+
+extension FolderByIndex on IsarCollection<Folder> {
+  Future<Folder?> getByName(String name) {
+    return getByIndex(r'name', [name]);
+  }
+
+  Folder? getByNameSync(String name) {
+    return getByIndexSync(r'name', [name]);
+  }
+
+  Future<bool> deleteByName(String name) {
+    return deleteByIndex(r'name', [name]);
+  }
+
+  bool deleteByNameSync(String name) {
+    return deleteByIndexSync(r'name', [name]);
+  }
+
+  Future<List<Folder?>> getAllByName(List<String> nameValues) {
+    final values = nameValues.map((e) => [e]).toList();
+    return getAllByIndex(r'name', values);
+  }
+
+  List<Folder?> getAllByNameSync(List<String> nameValues) {
+    final values = nameValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'name', values);
+  }
+
+  Future<int> deleteAllByName(List<String> nameValues) {
+    final values = nameValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'name', values);
+  }
+
+  int deleteAllByNameSync(List<String> nameValues) {
+    final values = nameValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'name', values);
+  }
+
+  Future<Id> putByName(Folder object) {
+    return putByIndex(r'name', object);
+  }
+
+  Id putByNameSync(Folder object, {bool saveLinks = true}) {
+    return putByIndexSync(r'name', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByName(List<Folder> objects) {
+    return putAllByIndex(r'name', objects);
+  }
+
+  List<Id> putAllByNameSync(List<Folder> objects, {bool saveLinks = true}) {
+    return putAllByIndexSync(r'name', objects, saveLinks: saveLinks);
+  }
 }
 
 extension FolderQueryWhereSort on QueryBuilder<Folder, Folder, QWhere> {
@@ -214,171 +266,59 @@ extension FolderQueryWhere on QueryBuilder<Folder, Folder, QWhereClause> {
       );
     });
   }
+
+  QueryBuilder<Folder, Folder, QAfterWhereClause> nameEqualTo(String name) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'name', value: [name]),
+      );
+    });
+  }
+
+  QueryBuilder<Folder, Folder, QAfterWhereClause> nameNotEqualTo(String name) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [],
+                upper: [name],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [name],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [name],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name',
+                lower: [],
+                upper: [name],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
 }
 
 extension FolderQueryFilter on QueryBuilder<Folder, Folder, QFilterCondition> {
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'color'),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'color'),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(
-          property: r'color',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorGreaterThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(
-          include: include,
-          property: r'color',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorLessThan(
-    String? value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.lessThan(
-          include: include,
-          property: r'color',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorBetween(
-    String? lower,
-    String? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.between(
-          property: r'color',
-          lower: lower,
-          includeLower: includeLower,
-          upper: upper,
-          includeUpper: includeUpper,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.startsWith(
-          property: r'color',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.endsWith(
-          property: r'color',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorContains(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.contains(
-          property: r'color',
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorMatches(
-    String pattern, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.matches(
-          property: r'color',
-          wildcard: pattern,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'color', value: ''),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> colorIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'color', value: ''),
-      );
-    });
-  }
-
   QueryBuilder<Folder, Folder, QAfterFilterCondition> createdAtIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
@@ -763,25 +703,8 @@ extension FolderQueryFilter on QueryBuilder<Folder, Folder, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Folder, Folder, QAfterFilterCondition> sourceDirectoryIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNull(property: r'sourceDirectory'),
-      );
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterFilterCondition>
-  sourceDirectoryIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        const FilterCondition.isNotNull(property: r'sourceDirectory'),
-      );
-    });
-  }
-
   QueryBuilder<Folder, Folder, QAfterFilterCondition> sourceDirectoryEqualTo(
-    String? value, {
+    String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -797,7 +720,7 @@ extension FolderQueryFilter on QueryBuilder<Folder, Folder, QFilterCondition> {
 
   QueryBuilder<Folder, Folder, QAfterFilterCondition>
   sourceDirectoryGreaterThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -814,7 +737,7 @@ extension FolderQueryFilter on QueryBuilder<Folder, Folder, QFilterCondition> {
   }
 
   QueryBuilder<Folder, Folder, QAfterFilterCondition> sourceDirectoryLessThan(
-    String? value, {
+    String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -831,8 +754,8 @@ extension FolderQueryFilter on QueryBuilder<Folder, Folder, QFilterCondition> {
   }
 
   QueryBuilder<Folder, Folder, QAfterFilterCondition> sourceDirectoryBetween(
-    String? lower,
-    String? upper, {
+    String lower,
+    String upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -934,18 +857,6 @@ extension FolderQueryObject on QueryBuilder<Folder, Folder, QFilterCondition> {}
 extension FolderQueryLinks on QueryBuilder<Folder, Folder, QFilterCondition> {}
 
 extension FolderQuerySortBy on QueryBuilder<Folder, Folder, QSortBy> {
-  QueryBuilder<Folder, Folder, QAfterSortBy> sortByColor() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterSortBy> sortByColorDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.desc);
-    });
-  }
-
   QueryBuilder<Folder, Folder, QAfterSortBy> sortByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
@@ -984,18 +895,6 @@ extension FolderQuerySortBy on QueryBuilder<Folder, Folder, QSortBy> {
 }
 
 extension FolderQuerySortThenBy on QueryBuilder<Folder, Folder, QSortThenBy> {
-  QueryBuilder<Folder, Folder, QAfterSortBy> thenByColor() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Folder, Folder, QAfterSortBy> thenByColorDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'color', Sort.desc);
-    });
-  }
-
   QueryBuilder<Folder, Folder, QAfterSortBy> thenByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdAt', Sort.asc);
@@ -1046,14 +945,6 @@ extension FolderQuerySortThenBy on QueryBuilder<Folder, Folder, QSortThenBy> {
 }
 
 extension FolderQueryWhereDistinct on QueryBuilder<Folder, Folder, QDistinct> {
-  QueryBuilder<Folder, Folder, QDistinct> distinctByColor({
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'color', caseSensitive: caseSensitive);
-    });
-  }
-
   QueryBuilder<Folder, Folder, QDistinct> distinctByCreatedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdAt');
@@ -1093,12 +984,6 @@ extension FolderQueryProperty on QueryBuilder<Folder, Folder, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Folder, String?, QQueryOperations> colorProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'color');
-    });
-  }
-
   QueryBuilder<Folder, DateTime?, QQueryOperations> createdAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'createdAt');
@@ -1117,7 +1002,7 @@ extension FolderQueryProperty on QueryBuilder<Folder, Folder, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Folder, String?, QQueryOperations> sourceDirectoryProperty() {
+  QueryBuilder<Folder, String, QQueryOperations> sourceDirectoryProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'sourceDirectory');
     });

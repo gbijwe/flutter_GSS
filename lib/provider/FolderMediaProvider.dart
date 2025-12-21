@@ -31,8 +31,7 @@ class FolderMediaProvider extends ChangeNotifier {
     final applicationDir = await getApplicationDocumentsDirectory();
     await _folderRepo.createFolder(
       name: name,
-      sourceDirectory: sourceDirectory ?? applicationDir.path,
-      color: color,
+      sourceDirectory: sourceDirectory ?? "${applicationDir.path}/PhotbuddySource/",
     );
     await _loadFolders();
   }

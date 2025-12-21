@@ -35,6 +35,7 @@ class FileSelectionActionProvider extends ChangeNotifier {
 
   void clearSelection() {
     _selectedFileIds.clear();
+    if (_selectionMode) toggleSelectionMode();
     notifyListeners();
   }
 }
