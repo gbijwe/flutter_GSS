@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
+import 'package:photo_buddy/provider/NavigatorStateProvider.dart';
 import 'package:photo_buddy/screens/content/AllMedia.dart';
 import 'package:photo_buddy/screens/content/Favorites.dart';
 import 'package:photo_buddy/screens/content/People.dart';
@@ -64,6 +65,7 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   Widget build(BuildContext context) {
     final folders = context.watch<FolderMediaProvider>().folders;
+    final navigatorStateProvider = context.read<NavigatorStateProvider>();
 
     return MacosWindow(
       titleBar: null,
@@ -245,6 +247,7 @@ class _LandingScreenState extends State<LandingScreen> {
               });
               // clear selections on page change
               context.read<FileSelectionActionProvider>().clearSelection();
+              navigatorStateProvider.updateIndex(pageIdx);
             },
           );
         },

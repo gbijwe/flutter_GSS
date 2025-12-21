@@ -7,6 +7,7 @@ import 'package:photo_buddy/helpers/PathContextManger.dart';
 import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
+import 'package:photo_buddy/provider/NavigatorStateProvider.dart';
 import 'package:photo_buddy/screens/landing.dart';
 import 'package:provider/provider.dart';
 
@@ -42,6 +43,7 @@ void main() async {
               previous ?? FolderMediaProvider(mediaProvider.mediaRepo),
         ),
         ChangeNotifierProvider(create: (_) => FileSelectionActionProvider()),
+        ChangeNotifierProvider(create: (_) => NavigatorStateProvider()),
       ],
       child: const MainApp(),
     ),

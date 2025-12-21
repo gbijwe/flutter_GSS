@@ -65,7 +65,7 @@ class FolderTemplateWidget extends StatelessWidget {
                 folderId: folderId,
                 mediaItemIds: selectedFilesActions.selectedFileIds.toList(),
               );
-              selectedFilesActions.clearSelection();
+              selectedFilesActions.toggleSelectionMode();
             },
           ),
           customToolbarItem(
@@ -85,7 +85,6 @@ class FolderTemplateWidget extends StatelessWidget {
               mediaActions.addToFavorites(
                 selectedFilesActions.selectedFileIds.toList(),
               );
-              selectedFilesActions.clearSelection();
               selectedFilesActions.toggleSelectionMode();
             },
           ),
