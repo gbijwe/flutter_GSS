@@ -4,7 +4,7 @@ import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
 import 'package:photo_buddy/screens/scaffolds/DefaultToolBarScaffold.dart';
-import 'package:photo_buddy/widgets/CreateFolderDialog.dart';
+import 'package:photo_buddy/widgets/dialogs/CreateFolderDialog.dart';
 import 'package:photo_buddy/widgets/CustomDropdownToolbarItem.dart';
 import 'package:photo_buddy/widgets/CustomToolbarItem.dart';
 import 'package:provider/provider.dart';

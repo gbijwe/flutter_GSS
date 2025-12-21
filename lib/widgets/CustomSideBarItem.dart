@@ -17,6 +17,7 @@ SidebarItem customSideBarItem({
           onSecondaryTapDown: (details) {
             showMacosSheet(
               context: context,
+              barrierDismissible: true,
               builder: contextMenuBuilder,
             );
           },

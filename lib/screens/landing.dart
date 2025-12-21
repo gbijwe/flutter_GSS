@@ -11,8 +11,9 @@ import 'package:photo_buddy/screens/content/filterMediaTypes/Panaromas.dart';
 import 'package:photo_buddy/screens/content/filterMediaTypes/Photos.dart';
 import 'package:photo_buddy/screens/content/filterMediaTypes/Videos.dart';
 import 'package:photo_buddy/screens/content/folders/FolderPage.dart';
-import 'package:photo_buddy/widgets/CreateFolderDialog.dart';
+import 'package:photo_buddy/widgets/dialogs/CreateFolderDialog.dart';
 import 'package:photo_buddy/widgets/CustomSideBarItem.dart';
+import 'package:photo_buddy/widgets/dialogs/RenameFolderDialog.dart';
 import 'package:provider/provider.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -170,6 +171,20 @@ class _LandingScreenState extends State<LandingScreen> {
                                     );
                                   },
                                 ),
+                                const SizedBox(height: 8),
+                                MacosListTile(
+                                  leading: MacosIcon(
+                                    CupertinoIcons.folder_open,
+                                  ),
+                                  title: Text(
+                                    'Rename Folder',
+                                  ),
+                                  onClick: () {
+                                    Navigator.pop(context);
+                                    showMacosAlertDialog(context: context, builder: (context) => RenameFolderDialog(folderId: folderItem.id, folderName: folderItem.name));
+                                  },
+                                ),
+                                const SizedBox(height: 8),
                                 MacosListTile(
                                   leading: MacosIcon(
                                     CupertinoIcons.delete,
@@ -186,6 +201,18 @@ class _LandingScreenState extends State<LandingScreen> {
                                     this.context
                                         .read<FolderMediaProvider>()
                                         .deleteFolder(folderItem.id);
+                                  },
+                                ),
+                                const SizedBox(height: 8),
+                                MacosListTile(
+                                  leading: MacosIcon(
+                                    CupertinoIcons.xmark_circle,
+                                  ),
+                                  title: Text(
+                                    'Cancel',
+                                  ),
+                                  onClick: () {
+                                    Navigator.pop(context);
                                   },
                                 ),
                               ],
