@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:photo_buddy/helpers/PathContextManger.dart';
 import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
@@ -22,6 +23,10 @@ void main() async {
       await _configureMacosWindowUtils();
     }
   }
+
+  // First initialize the path context
+  final pathContext = PathContextManager();
+  await pathContext.init();
 
   final mediaProvider = FileSystemMediaProvider();
   await mediaProvider.init();

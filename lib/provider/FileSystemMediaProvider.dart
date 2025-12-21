@@ -4,56 +4,51 @@ import 'package:file_selector/file_selector.dart';
 import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/data/repo/mediaRepo.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
+import 'package:photo_buddy/helpers/PathContextManger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path/path.dart' as p;
 
 class FileSystemMediaProvider extends ChangeNotifier {
   final MediaRepository _repo = MediaRepository();
+  final _pathContext = PathContextManager();
+
   List<MediaItem> _mediaFiles = []; 
   List<MediaItem> _recentlyAddedMediaFiles = []; 
   List<MediaItem> _favoriteMediaFiles = [];
-  String? _selectedPath;
+
 
   // getters
+  String? get currentPath => _pathContext.currentPath;
+  
   List<MediaItem> get mediaFiles => _mediaFiles;
   List<MediaItem> get recentlyAddedMediaFiles => _recentlyAddedMediaFiles;
-  List<MediaItem> get favoriteMediaFiles => _favoriteMediaFiles;
+  List<MediaItem> get favoriteMediaFiles => _mediaFiles.where((file) => file.isFavorite).toList();
   List<MediaItem> get panaromicImages => _mediaFiles.where((file) => file.type == FileType.image && file.aspectRatio != null && file.aspectRatio! < 0.40).toList();
   List<MediaItem> get imageFilesOnly => _mediaFiles.where((file) => file.type == FileType.image).toList();
   List<MediaItem> get videoFilesOnly => _mediaFiles.where((file) => file.type == FileType.video).toList();
 
-  // get current source path 
-  String? get currentPath => _selectedPath;
-
   // Initialize DB and load previous state
   Future<void> init() async {
+    await _pathContext.init(); // Load saved path or create default
     await _repo.init(); // Open Isar
-
-    // Load persisted path
-    final prefs = await SharedPreferences.getInstance();
-    final savedPath = prefs.getString('media_source_path');
-
-    if (savedPath != null) {
-      _selectedPath = savedPath;
 
       // 1. Show cached data immediately (Instant UI)
       await _refreshList();
-      await getFavorites();
       await getRecentlyAddedMedia();
       // 2. Sync in background to find new files
-      _repo.syncFromDirectory(savedPath).then((_) {
-        getFavorites();
-        getRecentlyAddedMedia();
-        _refreshList(); // Update UI after sync finishes
-      });
+      if (_pathContext.currentPath != null) {
+        _repo.syncFromDirectory(_pathContext.currentPath!).then((_) {
+          getRecentlyAddedMedia();
+          _refreshList(); // Update UI after sync finishes
+        });
+      }
     }
-  }
 
   Future<void> rescanDirectory() async {
-    if (_selectedPath != null) {
-      await _repo.syncFromDirectory(_selectedPath!);
+    final currentPath = _pathContext.currentPath;
+    if (currentPath != null) {
+      await _repo.syncFromDirectory(currentPath!);
       await _refreshList();
-      await getFavorites();
       await getRecentlyAddedMedia();
     }
   }
@@ -61,16 +56,11 @@ class FileSystemMediaProvider extends ChangeNotifier {
   Future<void> pickSourceDirectory() async {
     final String? directoryPath = await getDirectoryPath();
     if (directoryPath != null) {
-      _selectedPath = p.absolute(directoryPath);
+      await _pathContext.setCurrentPath(directoryPath);
       notifyListeners();
 
-      // Save path
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('media_source_path', _selectedPath!);
-
       // Sync and Load
-      await _repo.syncFromDirectory(_selectedPath!);
-      await getFavorites();
+      await _repo.syncFromDirectory(directoryPath);
       await getRecentlyAddedMedia();
       await _refreshList();
     }
@@ -130,11 +120,6 @@ class FileSystemMediaProvider extends ChangeNotifier {
   bool isFavorite(int id) {
     final item = _mediaFiles.firstWhere((element) => element.id == id);
     return item.isFavorite;
-  }
-
-  Future<void> getFavorites() async {
-    _favoriteMediaFiles = await _repo.getFavorites();
-    notifyListeners();
   }
 
   // MediaRepository getter to be used by FolderRepository

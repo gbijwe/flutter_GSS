@@ -54,6 +54,19 @@ const FolderSchema = CollectionSchema(
         ),
       ],
     ),
+    r'sourceDirectory': IndexSchema(
+      id: 6434012060109734874,
+      name: r'sourceDirectory',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'sourceDirectory',
+          type: IndexType.hash,
+          caseSensitive: true,
+        ),
+      ],
+    ),
   },
   links: {},
   embeddedSchemas: {},
@@ -310,6 +323,63 @@ extension FolderQueryWhere on QueryBuilder<Folder, Folder, QWhereClause> {
                 indexName: r'name',
                 lower: [],
                 upper: [name],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<Folder, Folder, QAfterWhereClause> sourceDirectoryEqualTo(
+    String sourceDirectory,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'sourceDirectory',
+          value: [sourceDirectory],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Folder, Folder, QAfterWhereClause> sourceDirectoryNotEqualTo(
+    String sourceDirectory,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'sourceDirectory',
+                lower: [],
+                upper: [sourceDirectory],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'sourceDirectory',
+                lower: [sourceDirectory],
+                includeLower: false,
+                upper: [],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'sourceDirectory',
+                lower: [sourceDirectory],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'sourceDirectory',
+                lower: [],
+                upper: [sourceDirectory],
                 includeUpper: false,
               ),
             );

@@ -4,12 +4,14 @@ import 'package:photo_buddy/data/isar_classes/folder.dart';
 import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/data/repo/folderRepo.dart';
 import 'package:photo_buddy/data/repo/mediaRepo.dart';
+import 'package:photo_buddy/helpers/PathContextManger.dart';
 
 class FolderMediaProvider extends ChangeNotifier {
   final FolderRepository _folderRepo = FolderRepository();
   late final MediaRepository _mediaRepo;
-  List<Folder> _folders = [];
+  final _pathContext = PathContextManager();
 
+  List<Folder> _folders = [];
   List<Folder> get folders => _folders;
 
   FolderMediaProvider(this._mediaRepo) {
@@ -25,13 +27,14 @@ class FolderMediaProvider extends ChangeNotifier {
   /// Create a new folder
   Future<void> createFolder({
     required String name,
-    String? sourceDirectory,
     String? color,
   }) async {
-    final applicationDir = await getApplicationDocumentsDirectory();
+    final currentPath = _pathContext.currentPath;
+    if (currentPath == null) return;
+
     await _folderRepo.createFolder(
       name: name,
-      sourceDirectory: sourceDirectory ?? "${applicationDir.path}/PhotbuddySource/",
+      sourceDirectory: currentPath,
     );
     await _loadFolders();
   }
@@ -57,6 +60,7 @@ class FolderMediaProvider extends ChangeNotifier {
 
   /// Delete folder
   Future<void> deleteFolder(int folderId) async {
+    debugPrint("Deleting folder with ID: $folderId");
     await _folderRepo.deleteFolder(folderId);
     await _loadFolders();
   }
@@ -80,5 +84,9 @@ class FolderMediaProvider extends ChangeNotifier {
     return allMedia
         .where((item) => folder.mediaItemIds.contains(item.id))
         .toList();
+  }
+
+  Future<void> refreshFolders() async {
+    await _loadFolders();
   }
 }

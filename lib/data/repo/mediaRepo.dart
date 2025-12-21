@@ -7,10 +7,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:photo_buddy/data/isar_classes/folder.dart';
 import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
+import 'package:photo_buddy/helpers/PathContextManger.dart';
 
 class MediaRepository {
   late Isar _isar;
-
+  final _pathContext = PathContextManager();
+  
   /// Open the Database
   Future<void> init() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -19,18 +21,27 @@ class MediaRepository {
     _isar = await Isar.open([MediaItemSchema, FolderSchema], directory: dir.path);
   }
 
-  /// Get all items sorted by DateAdded (Fast)
+  /// Get all items sorted by DateAdded 
   Future<List<MediaItem>> getAllMedia() async {
+    final currentPath = _pathContext.currentPath;
+    if (currentPath == null) return [];
+
     return await _isar.mediaItems
-        .where()
-        .sortByDateAddedDesc() // Updated from sortByModifiedDateDesc
+        .filter()
+        .pathStartsWith(currentPath)
+        .sortByDateAddedDesc()
         .findAll();
   }
 
   Future<List<MediaItem>> getRecentlyAddedMedia() async {
+    final currentPath = _pathContext.currentPath;
+    if (currentPath == null) return [];
+
     final last24Hours = DateTime.now().subtract(Duration(hours: 24));
     return await _isar.mediaItems
         .filter()
+        .pathStartsWith(currentPath)
+        .and()
         .dateAddedGreaterThan(last24Hours, include: true)
         .sortByDateAddedDesc()
         .findAll();
@@ -38,8 +49,13 @@ class MediaRepository {
 
   /// Get only Favorites
   Future<List<MediaItem>> getFavorites() async {
+    final currentPath = _pathContext.currentPath;
+    if (currentPath == null) return [];
+
     return await _isar.mediaItems
         .filter()
+        .pathStartsWith(currentPath)
+        .and()
         .isFavoriteEqualTo(true)
         .sortByDateAddedDesc()
         .findAll();

@@ -93,9 +93,10 @@ class ContentTemplateWidget extends StatelessWidget {
           customToolbarItem(
             label: 'Select Source',
             iconData: CupertinoIcons.folder_badge_plus,
-            onPressed: () {
+            onPressed: () async {
               debugPrint('Changing source...');
-              mediaActions.pickSourceDirectory();
+              await mediaActions.pickSourceDirectory();
+              await folderActionsProvider.refreshFolders();
             },
           ),
           customToolbarItem(

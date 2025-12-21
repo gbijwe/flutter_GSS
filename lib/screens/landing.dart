@@ -23,7 +23,7 @@ class LandingScreen extends StatefulWidget {
 }
 
 class _LandingScreenState extends State<LandingScreen> {
-  int pageIdx = 0;
+  int pageIdx = 1;
 
   Widget _getContentWidget() {
     switch (pageIdx) {
@@ -54,10 +54,7 @@ class _LandingScreenState extends State<LandingScreen> {
         final folders = context.read<FolderMediaProvider>().folders;
         if (folderIdx >= 0 && folderIdx < folders.length) {
           final folder = folders[folderIdx];
-          return FolderPage(
-            folderId: folder.id,
-            folderName: folder.name,
-          );
+          return FolderPage(folderId: folder.id, folderName: folder.name);
         }
         return Center(child: Text('Select an item'));
     }
@@ -152,6 +149,50 @@ class _LandingScreenState extends State<LandingScreen> {
                       label: folderItem.name,
                       iconData: CupertinoIcons.folder,
                       isSelected: pageIdx == folderPageIdx,
+                      contextMenuBuilder: (context) {
+                        return MacosSheet(
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                MacosListTile(
+                                  leading: MacosIcon(
+                                    CupertinoIcons.plus_circle,
+                                  ),
+                                  title: Text('Create Folder'),
+                                  onClick: () {
+                                    Navigator.pop(context);
+                                    showMacosAlertDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          CreateFolderDialog(),
+                                    );
+                                  },
+                                ),
+                                MacosListTile(
+                                  leading: MacosIcon(
+                                    CupertinoIcons.delete,
+                                    color: MacosColors.systemRedColor,
+                                  ),
+                                  title: Text(
+                                    'Delete Folder',
+                                    style: TextStyle(
+                                      color: MacosColors.systemRedColor,
+                                    ),
+                                  ),
+                                  onClick: () {
+                                    Navigator.pop(context);
+                                    this.context
+                                        .read<FolderMediaProvider>()
+                                        .deleteFolder(folderItem.id);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     );
                   }),
                 ],

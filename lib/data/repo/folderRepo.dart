@@ -1,15 +1,25 @@
 import 'package:isar_community/isar.dart';
 import 'package:photo_buddy/data/isar_classes/folder.dart';
+import 'package:photo_buddy/helpers/PathContextManger.dart';
 
 class FolderRepository {
   late Isar _isar;
+  final _pathContext = PathContextManager();
+
   void setIsar(Isar isar) {
     _isar = isar;
   }
 
   /// Get all folders
   Future<List<Folder>> getAllFolders() async {
-    return await _isar.folders.where().sortByCreatedAtDesc().findAll();
+    final currentPath = _pathContext.currentPath;
+    if (currentPath == null) return [];
+
+    return await _isar.folders
+        .filter()
+        .sourceDirectoryEqualTo(currentPath)
+        .sortByCreatedAtDesc()
+        .findAll();
   }
 
   /// Create a new folder
@@ -17,10 +27,7 @@ class FolderRepository {
     required String name,
     required String sourceDirectory,
   }) async {
-    final folder = Folder(
-      name: name,
-      sourceDirectory: sourceDirectory,
-    );
+    final folder = Folder(name: name, sourceDirectory: sourceDirectory);
 
     return await _isar.writeTxn(() async {
       return await _isar.folders.put(folder);
@@ -41,7 +48,10 @@ class FolderRepository {
     });
   }
 
-  Future<void> removeMediaFromFolder(int folderId, List<int> mediaItemIds) async {
+  Future<void> removeMediaFromFolder(
+    int folderId,
+    List<int> mediaItemIds,
+  ) async {
     await _isar.writeTxn(() async {
       final folder = await _isar.folders.get(folderId);
       if (folder != null) {

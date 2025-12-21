@@ -15,7 +15,8 @@ class Folder {
   // Store media item IDs
   List<int> mediaItemIds = [];
 
-  // Optional: source directory this folder belongs to
+  // Need to use this as an environmental reference
+  @Index(unique: false, replace: false)
   String sourceDirectory;
 
   Folder({
