@@ -108,6 +108,24 @@ class FileSystemMediaProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> addToFavorites(List<int> ids) async {
+    for (var id in ids) {
+      final index = _mediaFiles.indexWhere((item) => item.id == id);
+      if (index == -1) continue;
+
+      final file = _mediaFiles[index];
+      if (!file.isFavorite) {
+        _repo.toggleFavorite(file.id);
+        // Update cached list of all media files
+        file.isFavorite = true;
+        if (!_favoriteMediaFiles.any((e) => e.id == id)) {
+          _favoriteMediaFiles.add(file);
+        }
+      }
+    }
+    notifyListeners();
+  }
+
   // check if a media item is favorite by id
   bool isFavorite(int id) {
     final item = _mediaFiles.firstWhere((element) => element.id == id);

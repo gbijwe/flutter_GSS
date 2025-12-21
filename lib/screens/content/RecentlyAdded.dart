@@ -72,6 +72,13 @@ class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
                           isSelected: selectionStatusProvider.isFileSelected(
                             file.id,
                           ),
+                          onTap: selectionStatusProvider.selectionMode
+                              ? () {
+                                  selectionActionProvider.toggleFileSelection(
+                                    file.id,
+                                  );
+                                }
+                              : () {},
                           favoriteTap: () {
                             mediaProvider.toggleFavorite(file.id);
                             debugPrint("Toggled favorite for id: ${file.id}");
@@ -94,12 +101,23 @@ class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
                             isSelected: selectionStatusProvider.isFileSelected(
                               file.id,
                             ),
+                            onTap: selectionStatusProvider.selectionMode
+                                ? () {
+                                    selectionActionProvider.toggleFileSelection(
+                                      file.id,
+                                    );
+                                  }
+                                : () {},
                             onDoubleTap: () {},
                             favoriteTap: () {
                               mediaProvider.toggleFavorite(file.id);
                               debugPrint("Toggled favorite for id: ${file.id}");
                             },
                             onLongPress: () {
+                              if (selectionStatusProvider.selectionMode ==
+                                  false) {
+                                selectionActionProvider.toggleSelectionMode();
+                              }
                               selectionActionProvider.toggleFileSelection(
                                 file.id,
                               );

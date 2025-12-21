@@ -11,6 +11,7 @@ class ImageThumbnailWidget extends StatelessWidget {
     required this.path,
     required this.id,
     required this.isFavorite,
+    required this.onTap,
     required this.onDoubleTap,
     required this.favoriteTap,
     this.isSelected = false,
@@ -22,6 +23,7 @@ class ImageThumbnailWidget extends StatelessWidget {
   final int id;
   final bool isFavorite;
   final bool isSelected;
+  final VoidCallback onTap;
   final VoidCallback onDoubleTap;
   final VoidCallback favoriteTap;
   final VoidCallback? onLongPress;
@@ -29,7 +31,7 @@ class ImageThumbnailWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: null, // add a preview mechanism
+      onTap: onTap, // add a preview mechanism
       onDoubleTap: onDoubleTap, // open preview
       onLongPress: onLongPress, // select this file
       child: Container(

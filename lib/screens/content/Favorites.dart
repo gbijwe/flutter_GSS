@@ -53,14 +53,32 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     final file = favorites[index];
 
                     if (file.type == FileType.video) {
-                      return Selector<FileSystemMediaProvider,bool>(
+                      return Selector<FileSystemMediaProvider, bool>(
                         selector: (_, p) => p.isFavorite(file.id),
                         builder: (_, isFavorite, __) => VideoThumbnailTile(
                           videoPath: file.path,
                           width: 100,
                           height: 100,
                           isFavorite: isFavorite,
-                          favoriteTap: () => mediaProvider.toggleFavorite(file.id),
+                          isSelected: selectionStatusProvider.isFileSelected(
+                            file.id,
+                          ),
+                          onTap: selectionStatusProvider.selectionMode
+                              ? () {
+                                  selectionActionProvider.toggleFileSelection(
+                                    file.id,
+                                  );
+                                }
+                              : () {},
+                          favoriteTap: () {
+                            mediaProvider.toggleFavorite(file.id);
+                            debugPrint("Toggled favorite for id: ${file.id}");
+                          },
+                          onLongPress: () {
+                            selectionActionProvider.toggleFileSelection(
+                              file.id,
+                            );
+                          },
                         ),
                       );
                     } else if (file.type == FileType.image) {
@@ -74,12 +92,23 @@ class _FavoritesPageState extends State<FavoritesPage> {
                             isSelected: selectionStatusProvider.isFileSelected(
                               file.id,
                             ),
+                            onTap: selectionStatusProvider.selectionMode
+                                ? () {
+                                    selectionActionProvider.toggleFileSelection(
+                                      file.id,
+                                    );
+                                  }
+                                : () {},
                             onDoubleTap: () {},
                             favoriteTap: () {
                               mediaProvider.toggleFavorite(file.id);
                               debugPrint("Toggled favorite for id: ${file.id}");
                             },
                             onLongPress: () {
+                              if (selectionStatusProvider.selectionMode ==
+                                  false) {
+                                selectionActionProvider.toggleSelectionMode();
+                              }
                               selectionActionProvider.toggleFileSelection(
                                 file.id,
                               );

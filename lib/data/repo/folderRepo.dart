@@ -43,15 +43,14 @@ class FolderRepository {
     });
   }
 
-  /// Remove media items from folder
-  Future<void> removeMediaFromFolder(
-    int folderId,
-    List<int> mediaItemIds,
-  ) async {
+  Future<void> removeMediaFromFolder(int folderId, List<int> mediaItemIds) async {
     await _isar.writeTxn(() async {
       final folder = await _isar.folders.get(folderId);
       if (folder != null) {
-        folder.mediaItemIds.removeWhere((id) => mediaItemIds.contains(id));
+        // Create a new mutable list and filter out the IDs to remove
+        folder.mediaItemIds = folder.mediaItemIds
+            .where((id) => !mediaItemIds.contains(id))
+            .toList(); // Create new list
         await _isar.folders.put(folder);
       }
     });

@@ -43,7 +43,11 @@ class _PanaromasPageState extends State<PanaromasPage> {
       children: [
         Expanded(
           child: panaromas.isEmpty
-              ? Center(child: Text("No panaromic images found or no directory selected"))
+              ? Center(
+                  child: Text(
+                    "No panaromic images found or no directory selected",
+                  ),
+                )
               : GridView.builder(
                   itemCount: panaromas.length,
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
@@ -53,14 +57,32 @@ class _PanaromasPageState extends State<PanaromasPage> {
                     final file = panaromas[index];
 
                     if (file.type == FileType.video) {
-                      return Selector<FileSystemMediaProvider,bool>(
+                      return Selector<FileSystemMediaProvider, bool>(
                         selector: (_, p) => p.isFavorite(file.id),
                         builder: (_, isFavorite, __) => VideoThumbnailTile(
                           videoPath: file.path,
                           width: 100,
                           height: 100,
                           isFavorite: isFavorite,
-                          favoriteTap: () => mediaProvider.toggleFavorite(file.id),
+                          isSelected: selectionStatusProvider.isFileSelected(
+                            file.id,
+                          ),
+                          onTap: selectionStatusProvider.selectionMode
+                              ? () {
+                                  selectionActionProvider.toggleFileSelection(
+                                    file.id,
+                                  );
+                                }
+                              : () {},
+                          favoriteTap: () {
+                            mediaProvider.toggleFavorite(file.id);
+                            debugPrint("Toggled favorite for id: ${file.id}");
+                          },
+                          onLongPress: () {
+                            selectionActionProvider.toggleFileSelection(
+                              file.id,
+                            );
+                          },
                         ),
                       );
                     } else if (file.type == FileType.image) {
@@ -71,6 +93,13 @@ class _PanaromasPageState extends State<PanaromasPage> {
                             path: file.path,
                             id: file.id,
                             isFavorite: isFavorite,
+                            onTap: selectionStatusProvider.selectionMode
+                                ? () {
+                                    selectionActionProvider.toggleFileSelection(
+                                      file.id,
+                                    );
+                                  }
+                                : () {},
                             isSelected: selectionStatusProvider.isFileSelected(
                               file.id,
                             ),
@@ -80,6 +109,10 @@ class _PanaromasPageState extends State<PanaromasPage> {
                               debugPrint("Toggled favorite for id: ${file.id}");
                             },
                             onLongPress: () {
+                              if (selectionStatusProvider.selectionMode ==
+                                  false) {
+                                selectionActionProvider.toggleSelectionMode();
+                              }
                               selectionActionProvider.toggleFileSelection(
                                 file.id,
                               );

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
+import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
 import 'package:photo_buddy/screens/content/folders/FolderTemplate.dart';
@@ -10,7 +11,11 @@ import 'package:photo_buddy/widgets/VideoThumbnail.dart';
 import 'package:provider/provider.dart';
 
 class FolderPage extends StatefulWidget {
-  const FolderPage({super.key, required this.folderId, required this.folderName});
+  const FolderPage({
+    super.key,
+    required this.folderId,
+    required this.folderName,
+  });
 
   final int folderId;
   final String folderName;
@@ -22,17 +27,41 @@ class FolderPage extends StatefulWidget {
 class _FolderPageState extends State<FolderPage> {
   List<MediaItem> folderMediaItems = [];
   bool isLoading = true;
-  
+  FolderMediaProvider? _folderProvider; 
+
   @override
   void initState() {
     super.initState();
+    _loadFolderMedia();
+    
+    if (_folderProvider == null) {
+      _folderProvider = context.read<FolderMediaProvider>();
+      _folderProvider!.addListener(_onFolderChanged);
+    }
+  }
+
+  @override
+  void didUpdateWidget(FolderPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.folderId != widget.folderId) {
+      _loadFolderMedia();
+    }
+  }
+
+  @override 
+  void dispose() {
+    _folderProvider?.removeListener(_onFolderChanged);
+    super.dispose();
+  }
+
+  void _onFolderChanged() {
     _loadFolderMedia();
   }
 
   Future<void> _loadFolderMedia() async {
     final folderProvider = context.read<FolderMediaProvider>();
     final media = await folderProvider.getMediaInFolder(widget.folderId);
-    
+
     setState(() {
       folderMediaItems = media;
       isLoading = false;
@@ -43,6 +72,7 @@ class _FolderPageState extends State<FolderPage> {
   Widget build(BuildContext context) {
     return FolderTemplateWidget(
       title: widget.folderName,
+      folderId: widget.folderId,
       children: [
         ContentArea(
           builder: (context, scrollcontroller) {
@@ -58,6 +88,10 @@ class _FolderPageState extends State<FolderPage> {
       return Center(child: ProgressCircle());
     }
     final mediaProvider = context.read<FileSystemMediaProvider>();
+    final selectionStatusProvider = context
+        .watch<FileSelectionActionProvider>();
+    final selectionActionProvider = context.read<FileSelectionActionProvider>();
+
     return Column(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -82,7 +116,29 @@ class _FolderPageState extends State<FolderPage> {
                           width: 100,
                           height: 100,
                           isFavorite: isFavorite,
-                          favoriteTap: () => mediaProvider.toggleFavorite(file.id),
+                          isSelected: selectionStatusProvider.isFileSelected(
+                            file.id,
+                          ),
+                          onTap: selectionStatusProvider.selectionMode
+                              ? () {
+                                  selectionActionProvider.toggleFileSelection(
+                                    file.id,
+                                  );
+                                }
+                              : () {},
+                          favoriteTap: () {
+                            mediaProvider.toggleFavorite(file.id);
+                            debugPrint("Toggled favorite for id: ${file.id}");
+                          },
+                          onLongPress: () {
+                              if (selectionStatusProvider.selectionMode ==
+                                  false) {
+                                selectionActionProvider.toggleSelectionMode();
+                              }
+                              selectionActionProvider.toggleFileSelection(
+                                file.id,
+                              );
+                            },
                         ),
                       );
                     } else if (file.type == FileType.image) {
@@ -93,10 +149,29 @@ class _FolderPageState extends State<FolderPage> {
                             path: file.path,
                             id: file.id,
                             isFavorite: isFavorite,
+                            onTap: selectionStatusProvider.selectionMode
+                                ? () {
+                                    selectionActionProvider.toggleFileSelection(
+                                      file.id,
+                                    );
+                                  }
+                                : () {},
+                            isSelected: selectionStatusProvider.isFileSelected(
+                              file.id,
+                            ),
                             onDoubleTap: () {},
                             favoriteTap: () {
                               mediaProvider.toggleFavorite(file.id);
                               debugPrint("Toggled favorite for id: ${file.id}");
+                            },
+                            onLongPress: () {
+                              if (selectionStatusProvider.selectionMode ==
+                                  false) {
+                                selectionActionProvider.toggleSelectionMode();
+                              }
+                              selectionActionProvider.toggleFileSelection(
+                                file.id,
+                              );
                             },
                           );
                         },

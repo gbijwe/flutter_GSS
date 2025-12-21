@@ -161,7 +161,7 @@ class _LandingScreenState extends State<LandingScreen> {
                     );
                   },
                   child: MacosIcon(
-                    CupertinoIcons.folder_badge_plus,
+                    CupertinoIcons.plus,
                     color: MacosColors.black,
                     size: 16.0,
                   ),

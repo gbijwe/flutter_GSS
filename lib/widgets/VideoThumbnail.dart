@@ -12,6 +12,7 @@ class VideoThumbnailTile extends StatefulWidget {
   final double height;
   final bool isFavorite;
   final bool isSelected;
+  final VoidCallback onTap;
   final VoidCallback? favoriteTap;
   final VoidCallback? onDoubleTap;
   final VoidCallback? onLongPress;
@@ -23,6 +24,7 @@ class VideoThumbnailTile extends StatefulWidget {
     this.height = 200,
     this.isFavorite = false,
     this.isSelected = false,
+    required this.onTap,
     this.favoriteTap,
     this.onDoubleTap,
     this.onLongPress,
@@ -90,7 +92,7 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
             snapshot.data != null) {
           // SUCCESS: Show the generated image
           return GestureDetector(
-            onTap: null,
+            onTap: widget.onTap,
             onDoubleTap: widget.onDoubleTap, // for preview
             onLongPress: widget.onLongPress, // for selection
             child: Container(

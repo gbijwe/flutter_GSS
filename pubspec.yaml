@@ -19,6 +19,7 @@ dependencies:
   path: ^1.9.1
   path_provider: ^2.1.5
   provider: ^6.1.5+1
+  pull_down_button: ^0.10.2
   shared_preferences: ^2.5.4
   watcher: ^1.2.0
 
