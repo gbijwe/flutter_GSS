@@ -99,7 +99,7 @@ class _FolderPageState extends State<FolderPage> {
       children: [
         Expanded(
           child: folderMediaItems.isEmpty
-              ? Center(child: Text("No media in this folder"))
+              ? Center(child: Text("This folder is currently empty"))
               : GridView.builder(
                   itemCount: folderMediaItems.length,
                   gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(

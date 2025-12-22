@@ -41,7 +41,7 @@ class _RecentlyAddedPageState extends State<RecentlyAddedPage> {
           child: recentlyAdded.isEmpty
               ? Center(
                   child: Text(
-                    "No media was added in the last 24 hours",
+                    "No recent uploads. Add files to see them here.",
                     style: TextStyle(
                       fontSize: 13.0,
                       color: MacosColors.systemGrayColor,
