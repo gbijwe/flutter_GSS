@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 
 Future<void> _configureMacosWindowUtils() async {
   const config = MacosWindowUtilsConfig(
-    toolbarStyle: NSWindowToolbarStyle.unified
+    toolbarStyle: NSWindowToolbarStyle.unified,
   );
   await config.apply();
 }
@@ -37,7 +37,10 @@ void main() async {
       providers: [
         // ChangeNotifierProvider(create: (_) => FileSystemMediaProvider()..loadSavedPath()),
         ChangeNotifierProvider.value(value: mediaProvider),
-        ChangeNotifierProxyProvider<FileSystemMediaProvider, FolderMediaProvider>(
+        ChangeNotifierProxyProvider<
+          FileSystemMediaProvider,
+          FolderMediaProvider
+        >(
           create: (context) => FolderMediaProvider(mediaProvider.mediaRepo),
           update: (context, mediaProvider, previous) =>
               previous ?? FolderMediaProvider(mediaProvider.mediaRepo),

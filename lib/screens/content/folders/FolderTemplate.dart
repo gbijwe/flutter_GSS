@@ -40,8 +40,7 @@ class FolderTemplateWidget extends StatelessWidget {
         },
       );
     }).toList();
-    dropdownItems.insert(
-      0,
+    dropdownItems.add(
       PullDownMenuItem(
         title: 'Create new folder',
         enabled: true,
@@ -50,76 +49,78 @@ class FolderTemplateWidget extends StatelessWidget {
         },
       ),
     );
-    return defaultToolBarScaffold(
-      title: title,
-      source: mediaProvider.currentPath ?? "No source selected",
-      actions: [
-        if (selectedFilesActions.selectionMode) ...[
-          customToolbarItem(
-            label: 'Delete from folder',
-            iconData: CupertinoIcons.trash,
-            color: MacosColors.appleRed,
-            onPressed: () {
-              debugPrint('Deleting from folder');
-              folderActionsProvider.removeMediaFromFolder(
-                folderId: folderId,
-                mediaItemIds: selectedFilesActions.selectedFileIds.toList(),
-              );
-              selectedFilesActions.toggleSelectionMode();
-            },
-          ),
-          customToolbarItem(
-            label: 'View original',
-            iconData: CupertinoIcons.sparkles,
-            onPressed: (selectedFilesActions.selectedFileIds.length == 1)
-                ? () {
-                    debugPrint('Opening in finder...');
-                  }
-                : null,
-          ),
-          customToolbarItem(
-            label: 'Add to favorites',
-            iconData: CupertinoIcons.heart,
-            onPressed: () {
-              debugPrint('Add to favorites');
-              mediaActions.addToFavorites(
-                selectedFilesActions.selectedFileIds.toList(),
-              );
-              selectedFilesActions.toggleSelectionMode();
-            },
-          ),
-          customDropdownToolbarItem(
-            label: 'Add to folder', 
-            dropdownItems: dropdownItems, color: CupertinoColors.black),
-          
-          customToolbarItem(
-            label: 'Cancel',
-            iconData: CupertinoIcons.clear_circled,
-            onPressed: () {
-              debugPrint('Clearing selection...');
-              selectedFilesActions.toggleSelectionMode();
-            },
-          ),
-        ] else ...[
-          customToolbarItem(
-            label: 'View original',
-            iconData: CupertinoIcons.sparkles,
-            onPressed: (selectedFilesActions.selectedFileIds.length == 1)
-                ? () {
-                    debugPrint('Opening in finder...');
-                  }
-                : null,
-          ),
-          customToolbarItem(
-            label: 'Select',
-            onPressed: () {
-              selectedFilesActions.toggleSelectionMode();
-              debugPrint('Select pressed');
-            },
-          ),
+    return Container(
+      child: defaultToolBarScaffold(
+        title: title,
+        source: mediaProvider.currentPath ?? "No source selected",
+        actions: [
+          if (selectedFilesActions.selectionMode) ...[
+            customToolbarItem(
+              label: 'Delete from folder',
+              iconData: CupertinoIcons.trash,
+              color: MacosColors.appleRed,
+              onPressed: () {
+                debugPrint('Deleting from folder');
+                folderActionsProvider.removeMediaFromFolder(
+                  folderId: folderId,
+                  mediaItemIds: selectedFilesActions.selectedFileIds.toList(),
+                );
+                selectedFilesActions.toggleSelectionMode();
+              },
+            ),
+            customToolbarItem(
+              label: 'View original',
+              iconData: CupertinoIcons.sparkles,
+              onPressed: (selectedFilesActions.selectedFileIds.length == 1)
+                  ? () {
+                      debugPrint('Opening in finder...');
+                    }
+                  : null,
+            ),
+            customToolbarItem(
+              label: 'Add to favorites',
+              iconData: CupertinoIcons.heart,
+              onPressed: () {
+                debugPrint('Add to favorites');
+                mediaActions.addToFavorites(
+                  selectedFilesActions.selectedFileIds.toList(),
+                );
+                selectedFilesActions.toggleSelectionMode();
+              },
+            ),
+            customDropdownToolbarItem(
+              label: 'Add to folder', 
+              dropdownItems: dropdownItems, color: CupertinoColors.black),
+            
+            customToolbarItem(
+              label: 'Cancel',
+              iconData: CupertinoIcons.clear_circled,
+              onPressed: () {
+                debugPrint('Clearing selection...');
+                selectedFilesActions.toggleSelectionMode();
+              },
+            ),
+          ] else ...[
+            customToolbarItem(
+              label: 'View original',
+              iconData: CupertinoIcons.sparkles,
+              onPressed: (selectedFilesActions.selectedFileIds.length == 1)
+                  ? () {
+                      debugPrint('Opening in finder...');
+                    }
+                  : null,
+            ),
+            customToolbarItem(
+              label: 'Select',
+              onPressed: () {
+                selectedFilesActions.toggleSelectionMode();
+                debugPrint('Select pressed');
+              },
+            ),
+          ],
         ],
-      ],
-      children: children,
+        children: children,
+      ),
     );
   }
 }

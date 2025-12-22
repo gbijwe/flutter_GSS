@@ -1,4 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
@@ -14,6 +17,7 @@ import 'package:photo_buddy/screens/content/filterMediaTypes/Videos.dart';
 import 'package:photo_buddy/screens/content/folders/FolderPage.dart';
 import 'package:photo_buddy/widgets/dialogs/CreateFolderDialog.dart';
 import 'package:photo_buddy/widgets/CustomSideBarItem.dart';
+import 'package:photo_buddy/widgets/dialogs/DeleteFolderDialog.dart';
 import 'package:photo_buddy/widgets/dialogs/RenameFolderDialog.dart';
 import 'package:provider/provider.dart';
 
@@ -26,6 +30,83 @@ class LandingScreen extends StatefulWidget {
 
 class _LandingScreenState extends State<LandingScreen> {
   int pageIdx = 1;
+  final ContextMenuController _contextMenuController = ContextMenuController();
+
+  @override
+  void dispose() {
+    _contextMenuController.remove();
+    super.dispose();
+  }
+
+  void _showFolderContextMenu(
+    BuildContext context,
+    Offset position,
+    int folderId,
+    String folderName,
+  ) {
+    _contextMenuController.show(
+      context: context,
+      contextMenuBuilder: (BuildContext context) {
+        return TapRegion(
+          onTapOutside: (event) {
+            _contextMenuController.remove();
+          },
+          child: Focus(
+            autofocus: true,
+            onKeyEvent: (node, event) {
+              if (event.logicalKey == LogicalKeyboardKey.escape) {
+                _contextMenuController.remove();
+                return KeyEventResult.handled;
+              }
+              return KeyEventResult.ignored;
+            },
+            child: AdaptiveTextSelectionToolbar.buttonItems(
+              anchors: TextSelectionToolbarAnchors(primaryAnchor: position),
+              buttonItems: <ContextMenuButtonItem>[
+                ContextMenuButtonItem(
+                  onPressed: () {
+                    ContextMenuController.removeAny();
+                    showMacosAlertDialog(
+                      context: context,
+                      builder: (context) => CreateFolderDialog(),
+                      barrierDismissible: true,
+                    );
+                  },
+                  label: 'Create Folder',
+                ),
+                ContextMenuButtonItem(
+                  onPressed: () {
+                    ContextMenuController.removeAny();
+                    showMacosAlertDialog(
+                      context: context,
+                      builder: (context) => RenameFolderDialog(
+                        folderId: folderId,
+                        folderName: folderName,
+                      ),
+                      barrierDismissible: true,
+                    );
+                  },
+                  label: 'Rename Folder',
+                ),
+                ContextMenuButtonItem(
+                  onPressed: () {
+                    ContextMenuController.removeAny();
+                    showMacosAlertDialog(
+                      context: context,
+                      builder: (context) =>
+                          DeleteFolderDialog(folderId: folderId),
+                      barrierDismissible: true,
+                    );
+                  },
+                  label: 'Delete Folder',
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   Widget _getContentWidget() {
     switch (pageIdx) {
@@ -147,81 +228,56 @@ class _LandingScreenState extends State<LandingScreen> {
                     final idx = folder.key;
                     final folderItem = folder.value;
                     final folderPageIdx = 11 + idx;
+                    final isSelected = pageIdx == folderPageIdx;
 
-                    return customSideBarItem(
-                      label: folderItem.name,
-                      iconData: CupertinoIcons.folder,
-                      isSelected: pageIdx == folderPageIdx,
-                      contextMenuBuilder: (context) {
-                        return MacosSheet(
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                MacosListTile(
-                                  leading: MacosIcon(
-                                    CupertinoIcons.plus_circle,
-                                  ),
-                                  title: Text('Create Folder'),
-                                  onClick: () {
-                                    Navigator.pop(context);
-                                    showMacosAlertDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          CreateFolderDialog(),
-                                    );
-                                  },
-                                ),
-                                const SizedBox(height: 8),
-                                MacosListTile(
-                                  leading: MacosIcon(
-                                    CupertinoIcons.folder_open,
-                                  ),
-                                  title: Text(
-                                    'Rename Folder',
-                                  ),
-                                  onClick: () {
-                                    Navigator.pop(context);
-                                    showMacosAlertDialog(context: context, builder: (context) => RenameFolderDialog(folderId: folderItem.id, folderName: folderItem.name));
-                                  },
-                                ),
-                                const SizedBox(height: 8),
-                                MacosListTile(
-                                  leading: MacosIcon(
-                                    CupertinoIcons.delete,
-                                    color: MacosColors.systemRedColor,
-                                  ),
-                                  title: Text(
-                                    'Delete Folder',
-                                    style: TextStyle(
-                                      color: MacosColors.systemRedColor,
-                                    ),
-                                  ),
-                                  onClick: () {
-                                    Navigator.pop(context);
-                                    this.context
-                                        .read<FolderMediaProvider>()
-                                        .deleteFolder(folderItem.id);
-                                  },
-                                ),
-                                const SizedBox(height: 8),
-                                MacosListTile(
-                                  leading: MacosIcon(
-                                    CupertinoIcons.xmark_circle,
-                                  ),
-                                  title: Text(
-                                    'Cancel',
-                                  ),
-                                  onClick: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
+                    return SidebarItem(
+                      leading: Listener(
+                        onPointerCancel: (event) {
+                          _contextMenuController.remove();
+                        },
+                        onPointerDown: (event) {
+                          if (event.kind == PointerDeviceKind.mouse &&
+                              event.buttons == 2) {
+                            _showFolderContextMenu(
+                              context,
+                              event.position,
+                              folderItem.id,
+                              folderItem.name,
+                            );
+                          }
+                        },
+                        child: Icon(
+                          CupertinoIcons.folder,
+                          size: 16,
+                          color: isSelected
+                              ? MacosColors.systemBlueColor
+                              : MacosColors.black,
+                        ),
+                      ),
+                      label: Listener(
+                        onPointerCancel: (event) {
+                          _contextMenuController.remove();
+                        },
+                        onPointerDown: (event) {
+                          if (event.kind == PointerDeviceKind.mouse &&
+                              event.buttons == 2) {
+                            _showFolderContextMenu(
+                              context,
+                              event.position,
+                              folderItem.id,
+                              folderItem.name,
+                            );
+                          }
+                        },
+                        child: Text(
+                          folderItem.name,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: MacosColors.black,
                           ),
-                        );
-                      },
+                        ),
+                      ),
+                      selectedColor: const Color(0x1C000000),
                     );
                   }),
                 ],

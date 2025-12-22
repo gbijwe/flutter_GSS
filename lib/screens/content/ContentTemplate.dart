@@ -47,8 +47,7 @@ class ContentTemplateWidget extends StatelessWidget {
         },
       );
     }).toList();
-    dropdownItems.insert(
-      0,
+    dropdownItems.add(
       PullDownMenuItem(
         title: 'Create new folder',
         enabled: true,
