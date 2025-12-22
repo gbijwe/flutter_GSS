@@ -89,14 +89,18 @@ class _LandingScreenState extends State<LandingScreen> {
                   label: 'Rename Folder',
                 ),
                 ContextMenuButtonItem(
+                  // onPressed: () {
+                  //   ContextMenuController.removeAny();
+                  //   showMacosAlertDialog(
+                  //     context: context,
+                  //     builder: (context) =>
+                  //         DeleteFolderDialog.show(context,  folderId),
+                  //     barrierDismissible: true,
+                  //   );
+                  // },
                   onPressed: () {
                     ContextMenuController.removeAny();
-                    showMacosAlertDialog(
-                      context: context,
-                      builder: (context) =>
-                          DeleteFolderDialog(folderId: folderId),
-                      barrierDismissible: true,
-                    );
+                    DeleteFolderDialog.show(context, folderId);
                   },
                   label: 'Delete Folder',
                 ),

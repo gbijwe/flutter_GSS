@@ -58,6 +58,12 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MacosApp(debugShowCheckedModeBanner: false, home: LandingScreen());
+    return MacosApp(debugShowCheckedModeBanner: false, home: LandingScreen(), theme: MacosThemeData(
+      typography: MacosTypography(color: MacosColors.black,
+        body: TextStyle(
+          fontFamily: 'SF Pro'
+        )
+      )
+    ),);
   }
 }
