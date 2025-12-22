@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:photo_buddy/data/isar_classes/folder.dart';
 import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/data/repo/folderRepo.dart';

@@ -6,8 +6,8 @@ import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
 import 'package:photo_buddy/screens/content/folders/FolderTemplate.dart';
-import 'package:photo_buddy/widgets/ImageThumbnail.dart';
-import 'package:photo_buddy/widgets/VideoThumbnail.dart';
+import 'package:photo_buddy/widgets/thumbnails/ImageThumbnail.dart';
+import 'package:photo_buddy/widgets/thumbnails/VideoThumbnail.dart';
 import 'package:provider/provider.dart';
 
 class FolderPage extends StatefulWidget {

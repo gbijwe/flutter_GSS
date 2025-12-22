@@ -5,8 +5,6 @@ import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/data/repo/mediaRepo.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
 import 'package:photo_buddy/helpers/PathContextManger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path/path.dart' as p;
 
 class FileSystemMediaProvider extends ChangeNotifier {
   final MediaRepository _repo = MediaRepository();
@@ -47,7 +45,7 @@ class FileSystemMediaProvider extends ChangeNotifier {
   Future<void> rescanDirectory() async {
     final currentPath = _pathContext.currentPath;
     if (currentPath != null) {
-      await _repo.syncFromDirectory(currentPath!);
+      await _repo.syncFromDirectory(currentPath);
       await _refreshList();
       await getRecentlyAddedMedia();
     }

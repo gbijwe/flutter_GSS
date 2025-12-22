@@ -13,7 +13,7 @@ SidebarItem customSideBarItem({
     return SidebarItem(
       leading: MacosIcon(iconData, color: isSelected ? iconColor : MacosColors.black),
       label: Builder(
-        builder: (context) => contextMenuBuilder != null ? GestureDetector(
+        builder: (context) => GestureDetector(
           onSecondaryTapDown: (details) {
             showMacosSheet(
               context: context,
@@ -22,7 +22,7 @@ SidebarItem customSideBarItem({
             );
           },
           child: Text(label, style: TextStyle(color: MacosColors.black)),
-        ) : Text(label, style: TextStyle(color: MacosColors.black)),
+        ),
       ),
       selectedColor: selectedColor,
     );
