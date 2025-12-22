@@ -16,36 +16,38 @@ class _CreateFolderDialogState extends State<CreateFolderDialog> {
   @override
   Widget build(BuildContext context) {
     return MacosAlertDialog(
-      appIcon: const MacosIcon(CupertinoIcons.folder_badge_plus),
-      title: const Text('Create New Folder'),
+      title: const Text('Create a New Folder'),
       message: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 16),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text('Name'),
-              Flexible(
-                child: MacosTextField(
-                  controller: _nameController,
-                  placeholder: 'Folder name',
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text('Name'),
+                Flexible(
+                  child: MacosTextField(
+                    controller: _nameController,
+                    placeholder: 'Folder name',
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
       primaryButton: PushButton(
         controlSize: ControlSize.large,
-        child: const Text('Create'),
+        child: const Text('Create folder'),
+        // child: const Text('Save media to this folder'),
         onPressed: () async {
           if (_nameController.text.isNotEmpty) {
             await context.read<FolderMediaProvider>().createFolder(
               name: _nameController.text,
             );
-            Navigator.of(context).pop();
+            if (context.mounted) Navigator.of(context).pop();
           }
         },
       ),

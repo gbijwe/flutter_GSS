@@ -13,10 +13,12 @@ class FileSystemMediaProvider extends ChangeNotifier {
   List<MediaItem> _mediaFiles = []; 
   List<MediaItem> _recentlyAddedMediaFiles = []; 
   List<MediaItem> _favoriteMediaFiles = [];
+  bool _isLoading = false;
 
 
   // getters
   String? get currentPath => _pathContext.currentPath;
+  bool get isLoading => _isLoading;
   
   List<MediaItem> get mediaFiles => _mediaFiles;
   List<MediaItem> get recentlyAddedMediaFiles => _recentlyAddedMediaFiles;
@@ -27,12 +29,19 @@ class FileSystemMediaProvider extends ChangeNotifier {
 
   // Initialize DB and load previous state
   Future<void> init() async {
+    _isLoading = true;
+    notifyListeners();
+
     await _pathContext.init(); // Load saved path or create default
     await _repo.init(); // Open Isar
 
       // 1. Show cached data immediately (Instant UI)
       await _refreshList();
       await getRecentlyAddedMedia();
+      
+      _isLoading = false;
+      notifyListeners();
+      
       // 2. Sync in background to find new files
       if (_pathContext.currentPath != null) {
         _repo.syncFromDirectory(_pathContext.currentPath!).then((_) {
@@ -45,15 +54,22 @@ class FileSystemMediaProvider extends ChangeNotifier {
   Future<void> rescanDirectory() async {
     final currentPath = _pathContext.currentPath;
     if (currentPath != null) {
+      _isLoading = true;
+      notifyListeners();
+      
       await _repo.syncFromDirectory(currentPath);
       await _refreshList();
       await getRecentlyAddedMedia();
+      
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   Future<void> pickSourceDirectory() async {
     final String? directoryPath = await getDirectoryPath();
     if (directoryPath != null) {
+      _isLoading = true;
       await _pathContext.setCurrentPath(directoryPath);
       notifyListeners();
 
@@ -61,6 +77,9 @@ class FileSystemMediaProvider extends ChangeNotifier {
       await _repo.syncFromDirectory(directoryPath);
       await getRecentlyAddedMedia();
       await _refreshList();
+      
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
