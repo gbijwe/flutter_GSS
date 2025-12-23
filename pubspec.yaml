@@ -13,6 +13,7 @@ dependencies:
   file_selector: ^1.1.0
   flutter:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
   image_size_getter: ^2.4.1
   isar_community: ^3.3.0
   isar_community_flutter_libs: ^3.3.0
@@ -33,3 +34,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets: 
+    - assets/icon/
