@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/screens/content/ContentTemplate.dart';
-import 'package:photo_buddy/widgets/dialogs/LoadingDialog.dart';
+import 'package:photo_buddy/widgets/dialogs/ProgressLoadingDialog.dart';
 import 'package:photo_buddy/widgets/thumbnails/MediaThumbnailWrapper.dart';
 import 'package:provider/provider.dart';
 
@@ -21,16 +22,53 @@ class _AllMediaPageState extends State<AllMediaPage> {
   Widget build(BuildContext context) {
     final mediaProvider = Provider.of<FileSystemMediaProvider>(context);
 
-    // Show/hide loading dialog based on loading state
+    // Show/hide loading dialog based on loading state (only for initial load)
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mediaProvider.isLoading && !_isDialogShowing) {
+      if (mediaProvider.isLoading && !_isDialogShowing && mediaProvider.currentOperation.contains('Initializing')) {
         _isDialogShowing = true;
-        LoadingDialog.show(context, message: 'Loading the media...');
-      } else if (!mediaProvider.isLoading && _isDialogShowing) {
-        _isDialogShowing = false;
-        Future.delayed(Duration(seconds: 10), () {
-          LoadingDialog.hide(context);
-        });
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          barrierColor: MacosColors.black.withOpacity(0.3),
+          builder: (dialogContext) => Consumer<FileSystemMediaProvider>(
+            builder: (context, provider, child) {
+              // Auto-close when done
+              if (!provider.isLoading && Navigator.of(dialogContext).canPop()) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (Navigator.of(dialogContext).canPop()) {
+                    Navigator.of(dialogContext).pop();
+                    _isDialogShowing = false;
+                    
+                    // Show error if any
+                    if (provider.hasError && provider.errorMessage != null) {
+                      showMacosAlertDialog(
+                        context: context,
+                        builder: (context) => MacosAlertDialog(
+                          appIcon: const MacosIcon(CupertinoIcons.exclamationmark_triangle),
+                          title: const Text('Error'),
+                          message: Text(provider.errorMessage!),
+                          primaryButton: PushButton(
+                            controlSize: ControlSize.large,
+                            child: const Text('OK'),
+                            onPressed: () {
+                              provider.clearError();
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                });
+              }
+              
+              return ProgressLoadingDialog.buildProgressDialog(
+                operation: provider.currentOperation,
+                progress: provider.progress,
+              );
+            },
+          ),
+        );
       }
     });
 

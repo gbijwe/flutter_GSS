@@ -6,6 +6,8 @@ import 'package:photo_buddy/data/repo/mediaRepo.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
 import 'package:photo_buddy/helpers/PathContextManger.dart';
 
+enum MediaOperationStatus { idle, loading, success, error }
+
 class FileSystemMediaProvider extends ChangeNotifier {
   final MediaRepository _repo = MediaRepository();
   final _pathContext = PathContextManager();
@@ -13,12 +15,20 @@ class FileSystemMediaProvider extends ChangeNotifier {
   List<MediaItem> _mediaFiles = []; 
   List<MediaItem> _recentlyAddedMediaFiles = []; 
   List<MediaItem> _favoriteMediaFiles = [];
-  bool _isLoading = false;
+  MediaOperationStatus _status = MediaOperationStatus.idle;
+  String? _errorMessage;
+  double _progress = 0.0;
+  String _currentOperation = '';
 
 
   // getters
   String? get currentPath => _pathContext.currentPath;
-  bool get isLoading => _isLoading;
+  bool get isLoading => _status == MediaOperationStatus.loading;
+  MediaOperationStatus get status => _status;
+  String? get errorMessage => _errorMessage;
+  bool get hasError => _status == MediaOperationStatus.error;
+  double get progress => _progress;
+  String get currentOperation => _currentOperation;
   
   List<MediaItem> get mediaFiles => _mediaFiles;
   List<MediaItem> get recentlyAddedMediaFiles => _recentlyAddedMediaFiles;
@@ -27,20 +37,38 @@ class FileSystemMediaProvider extends ChangeNotifier {
   List<MediaItem> get imageFilesOnly => _mediaFiles.where((file) => file.type == FileType.image).toList();
   List<MediaItem> get videoFilesOnly => _mediaFiles.where((file) => file.type == FileType.video).toList();
 
+  void _setStatus(MediaOperationStatus status, {String? error, String? operation}) {
+    _status = status;
+    _errorMessage = error;
+    if (operation != null) _currentOperation = operation;
+    notifyListeners();
+  }
+
+  void _updateProgress(double progress, {String? operation}) {
+    _progress = progress.clamp(0.0, 1.0);
+    if (operation != null) _currentOperation = operation;
+    notifyListeners();
+  }
+
   // Initialize DB and load previous state
   Future<void> init() async {
-    _isLoading = true;
-    notifyListeners();
+    _setStatus(MediaOperationStatus.loading, operation: 'Initializing...');
+    _updateProgress(0.0);
 
-    await _pathContext.init(); // Load saved path or create default
-    await _repo.init(); // Open Isar
+    try {
+      _updateProgress(0.2, operation: 'Loading configuration...');
+      await _pathContext.init(); // Load saved path or create default
+      
+      _updateProgress(0.4, operation: 'Opening database...');
+      await _repo.init(); // Open Isar
 
       // 1. Show cached data immediately (Instant UI)
+      _updateProgress(0.6, operation: 'Loading cached media...');
       await _refreshList();
       await getRecentlyAddedMedia();
       
-      _isLoading = false;
-      notifyListeners();
+      _updateProgress(1.0, operation: 'Done!');
+      _setStatus(MediaOperationStatus.success);
       
       // 2. Sync in background to find new files
       if (_pathContext.currentPath != null) {
@@ -49,37 +77,69 @@ class FileSystemMediaProvider extends ChangeNotifier {
           _refreshList(); // Update UI after sync finishes
         });
       }
+    } catch (e) {
+      _setStatus(
+        MediaOperationStatus.error,
+        error: 'Failed to initialize: $e',
+      );
     }
+  }
 
   Future<void> rescanDirectory() async {
     final currentPath = _pathContext.currentPath;
-    if (currentPath != null) {
-      _isLoading = true;
-      notifyListeners();
-      
+    if (currentPath == null) {
+      _setStatus(MediaOperationStatus.error, error: 'No source directory selected');
+      return;
+    }
+
+    _setStatus(MediaOperationStatus.loading, operation: 'Rescanning directory...');
+    _updateProgress(0.0);
+
+    try {
+      _updateProgress(0.3, operation: 'Scanning files...');
       await _repo.syncFromDirectory(currentPath);
+      
+      _updateProgress(0.7, operation: 'Loading media...');
       await _refreshList();
       await getRecentlyAddedMedia();
       
-      _isLoading = false;
-      notifyListeners();
+      _updateProgress(1.0, operation: 'Done!');
+      _setStatus(MediaOperationStatus.success);
+    } catch (e) {
+      _setStatus(
+        MediaOperationStatus.error,
+        error: 'Failed to rescan directory: $e',
+      );
     }
   }
 
   Future<void> pickSourceDirectory() async {
     final String? directoryPath = await getDirectoryPath();
-    if (directoryPath != null) {
-      _isLoading = true;
+    if (directoryPath == null) return;
+
+    _setStatus(MediaOperationStatus.loading, operation: 'Setting source directory...');
+    _updateProgress(0.0);
+
+    try {
+      _updateProgress(0.2, operation: 'Saving configuration...');
       await _pathContext.setCurrentPath(directoryPath);
       notifyListeners();
 
       // Sync and Load
+      _updateProgress(0.4, operation: 'Scanning files...');
       await _repo.syncFromDirectory(directoryPath);
+      
+      _updateProgress(0.7, operation: 'Loading media...');
       await getRecentlyAddedMedia();
       await _refreshList();
       
-      _isLoading = false;
-      notifyListeners();
+      _updateProgress(1.0, operation: 'Done!');
+      _setStatus(MediaOperationStatus.success);
+    } catch (e) {
+      _setStatus(
+        MediaOperationStatus.error,
+        error: 'Failed to set source directory: $e',
+      );
     }
   }
 
@@ -156,6 +216,14 @@ class FileSystemMediaProvider extends ChangeNotifier {
   bool isFavorite(int id) {
     final item = _mediaFiles.firstWhere((element) => element.id == id);
     return item.isFavorite;
+  }
+
+  void clearError() {
+    _status = MediaOperationStatus.idle;
+    _errorMessage = null;
+    _progress = 0.0;
+    _currentOperation = '';
+    notifyListeners();
   }
 
   // MediaRepository getter to be used by FolderRepository

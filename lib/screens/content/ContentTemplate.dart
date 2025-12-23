@@ -10,6 +10,7 @@ import 'package:photo_buddy/widgets/dialogs/CreateFolderDialog.dart';
 import 'package:photo_buddy/widgets/CustomDropdownToolbarItem.dart';
 import 'package:photo_buddy/widgets/CustomToolbarItem.dart';
 import 'package:photo_buddy/widgets/dialogs/GaussianBlurDialog.dart';
+import 'package:photo_buddy/widgets/dialogs/ProgressLoadingDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -311,18 +312,27 @@ class ContentTemplateWidget extends StatelessWidget {
           customToolbarItem(
             label: 'Select Source',
             iconData: CupertinoIcons.folder_badge_plus,
-            onPressed: () async {
+            onPressed: () {
               debugPrint('Changing source...');
-              await mediaActions.pickSourceDirectory();
-              await folderActionsProvider.refreshFolders();
+              ProgressLoadingDialog.showForMedia(
+                context: context,
+                operation: () async {
+                  await mediaActions.pickSourceDirectory();
+                  await folderActionsProvider.refreshFolders();
+                },
+              );
             },
           ),
           customToolbarItem(
             label: 'Rescan',
             iconData: CupertinoIcons.arrow_clockwise,
-            onPressed: () {
+            onPressed: () async {
               debugPrint('Rescanning directory...');
-              mediaActions.rescanDirectory();
+              ProgressLoadingDialog.showForMedia(
+                context: context,
+                operation: () => mediaActions.rescanDirectory(),
+              );
+              
             },
           ),
           customToolbarItem(
