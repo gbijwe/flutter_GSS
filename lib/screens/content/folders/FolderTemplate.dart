@@ -1,6 +1,7 @@
 import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:photo_buddy/helpers/OpenFileInFinder.dart';
 import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
@@ -151,10 +152,58 @@ class FolderTemplateWidget extends StatelessWidget {
               label: 'View original',
               iconData: CupertinoIcons.sparkles,
               onPressed: (selectedFilesActions.selectedFileIds.length == 1)
-                  ? () {
-                      debugPrint('Opening in finder...');
+                  ? () async {
+                      final file = await mediaProvider.getMediaItemsByIds(
+                        selectedFilesActions.selectedFileIds,
+                      );
+                      if (file.isNotEmpty) {
+                        openFileInFinder(file[0].path);
+                      }
                     }
-                  : null,
+                  : () {
+                      showMacosAlertDialog(
+                        context: context,
+                        barrierDismissible: true,
+                        barrierColor: MacosColors.black.withAlpha(30),
+                        builder: (context) {
+                          return GaussianBlurDialog(
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                top: 20.0,
+                                left: 22.0,
+                                right: 22.0,
+                                bottom: 16.0,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text(
+                                    "Select a single media to view the original",
+                                    style: TextStyle(
+                                      color: MacosColors.black,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 23),
+                                  AdaptiveButton(
+                                    label: "Alright!",
+                                    style: AdaptiveButtonStyle.filled,
+                                    color: MacosColors.white,
+                                    textColor: MacosColors.black,
+                                    onPressed: () {
+                                      if (context.mounted) {
+                                        Navigator.of(context).pop();
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
             ),
             customToolbarItem(
               label: 'Add to favorites',
@@ -166,8 +215,9 @@ class FolderTemplateWidget extends StatelessWidget {
                 );
                 if (context.mounted) {
                   await AddedToFavoritesDialog.show(
-                    context, 
-                    message: '${selectedFilesActions.selectedFileIds.length} items have been added to your Favourites section'
+                    context,
+                    message:
+                        '${selectedFilesActions.selectedFileIds.length} items have been added to your Favourites section',
                   );
                 }
 

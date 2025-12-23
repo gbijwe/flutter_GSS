@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:macos_ui/macos_ui.dart';
+import 'package:path/path.dart';
 import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
+import 'package:photo_buddy/helpers/OpenFileInFinder.dart';
 import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
@@ -148,9 +150,8 @@ void showMediaThumbnailContextMenu(
             buttonItems: <ContextMenuButtonItem>[
               ContextMenuButtonItem(
                 onPressed: () {
-                  if (selectionProvider.selectedCount == 1) {
-                    ContextMenuController.removeAny();
-                  }
+                  ContextMenuController.removeAny();
+                  openFileInFinder(file.path);
                 },
                 label: 'View Original',
               ),
@@ -206,7 +207,10 @@ void showMediaThumbnailContextMenu(
                 ContextMenuButtonItem(
                   onPressed: () {
                     ContextMenuController.removeAny();
-                    folderActionsProvider.removeMediaFromFolder(folderId: navigatorProvider.currentFolderId, mediaItemIds: [file.id]);
+                    folderActionsProvider.removeMediaFromFolder(
+                      folderId: navigatorProvider.currentFolderId,
+                      mediaItemIds: [file.id],
+                    );
                   },
                   label: 'Delete from folder',
                 ),
