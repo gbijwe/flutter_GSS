@@ -226,6 +226,10 @@ class FileSystemMediaProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<List<MediaItem>> getMediaItemsByIds(Set<int> ids) async {
+    return _repo.getMediaItemsByIds(ids);
+  }
+
   // MediaRepository getter to be used by FolderRepository
   MediaRepository get mediaRepo => _repo;
 }

@@ -72,6 +72,17 @@ class MediaRepository {
     });
   }
 
+  Future<List<MediaItem>> getMediaItemsByIds(Set<int> ids) async {
+    List<MediaItem> items = [];
+    for (var id in ids) {
+      final item = await _isar.mediaItems.get(id);
+      if (item != null) {
+        items.add(item);
+      }
+    }
+    return items;
+  }
+
   /// THE SYNC LOGIC
   Future<void> syncFromDirectory(String directoryPath) async {
     final dir = Directory(directoryPath);
