@@ -27,12 +27,17 @@ class _RenameFolderDialogState extends State<RenameFolderDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text('Name'),
+              const Text('Name', style: TextStyle(fontSize: 13),),
+              const SizedBox(width : 6),
               Flexible(
                 child: MacosTextField(
+                  textAlignVertical: TextAlignVertical.center,
                   controller: _nameController,
                   placeholder: widget.folderName,
                   autofocus: true,
+                  style: TextStyle(
+                    color: MacosColors.black
+                  ),
                 ),
               ),
             ],

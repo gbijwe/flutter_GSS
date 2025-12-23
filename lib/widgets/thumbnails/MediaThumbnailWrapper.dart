@@ -3,6 +3,7 @@ import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
 import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
+import 'package:photo_buddy/widgets/contextMenus/thumbnail/thumbnailContextMenu.dart';
 import 'package:photo_buddy/widgets/thumbnails/ImageThumbnail.dart';
 import 'package:photo_buddy/widgets/thumbnails/VideoThumbnail.dart';
 import 'package:provider/provider.dart';
@@ -10,16 +11,17 @@ import 'package:provider/provider.dart';
 class MediaThumbnailWrapper extends StatelessWidget {
   final MediaItem file;
 
-  const MediaThumbnailWrapper({
-    super.key,
-    required this.file,
-  });
+  const MediaThumbnailWrapper({super.key, required this.file});
+
+  static final ContextMenuController _contextMenuController =
+      ContextMenuController();
 
   @override
   Widget build(BuildContext context) {
     final mediaProvider = context.read<FileSystemMediaProvider>();
     final selectionActionProvider = context.read<FileSelectionActionProvider>();
-    final selectionStatusProvider = context.watch<FileSelectionActionProvider>();
+    final selectionStatusProvider = context
+        .watch<FileSelectionActionProvider>();
 
     return Selector<FileSystemMediaProvider, bool>(
       selector: (_, provider) => provider.isFavorite(file.id),
@@ -32,6 +34,16 @@ class MediaThumbnailWrapper extends StatelessWidget {
               ? () => selectionActionProvider.toggleFileSelection(file.id)
               : () {},
           onDoubleTap: () {}, // Add your preview logic here
+          onSecondaryTapDown: (details) {
+            if (!isSelectionMode) {
+              showMediaThumbnailContextMenu(
+                context,
+                details.globalPosition,
+                file,
+                _contextMenuController,
+              );
+            }
+          },
           onLongPress: () {
             if (!isSelectionMode) {
               selectionActionProvider.toggleSelectionMode();
@@ -55,6 +67,7 @@ class MediaThumbnailWrapper extends StatelessWidget {
             onDoubleTap: commonCallbacks.onDoubleTap,
             onLongPress: commonCallbacks.onLongPress,
             favoriteTap: commonCallbacks.favoriteTap,
+            onSecondaryTapDown: commonCallbacks.onSecondaryTapDown,
           );
         } else if (file.type == FileType.image) {
           return ImageThumbnailWidget(
@@ -66,12 +79,11 @@ class MediaThumbnailWrapper extends StatelessWidget {
             onDoubleTap: commonCallbacks.onDoubleTap,
             onLongPress: commonCallbacks.onLongPress,
             favoriteTap: commonCallbacks.favoriteTap,
+            onSecondaryTapDown: commonCallbacks.onSecondaryTapDown,
           );
         } else {
           return Center(
-            child: Text(
-              ".${file.path.split(".").last} is not supported",
-            ),
+            child: Text(".${file.path.split(".").last} is not supported"),
           );
         }
       },
@@ -82,6 +94,7 @@ class MediaThumbnailWrapper extends StatelessWidget {
 class _MediaCallbacks {
   final VoidCallback onTap;
   final VoidCallback onDoubleTap;
+  final GestureTapDownCallback onSecondaryTapDown;
   final VoidCallback onLongPress;
   final VoidCallback favoriteTap;
 
@@ -90,5 +103,6 @@ class _MediaCallbacks {
     required this.onDoubleTap,
     required this.onLongPress,
     required this.favoriteTap,
+    required this.onSecondaryTapDown,
   });
 }

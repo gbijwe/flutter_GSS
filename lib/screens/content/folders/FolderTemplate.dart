@@ -5,10 +5,11 @@ import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
 import 'package:photo_buddy/screens/scaffolds/DefaultToolBarScaffold.dart';
-import 'package:photo_buddy/widgets/dialogs/CreateFolderDialog.dart';
+import 'package:photo_buddy/widgets/dialogs/favorites/AddedToFavoritesDialog.dart';
+import 'package:photo_buddy/widgets/dialogs/folders/CreateFolderDialog.dart';
 import 'package:photo_buddy/widgets/CustomDropdownToolbarItem.dart';
 import 'package:photo_buddy/widgets/CustomToolbarItem.dart';
-import 'package:photo_buddy/widgets/dialogs/GaussianBlurDialog.dart';
+import 'package:photo_buddy/widgets/dialogs/templates/GaussianBlurDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -64,7 +65,7 @@ class FolderTemplateWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        ' Are you sure you want to the selected ${selectedFilesActions.selectedFileIds.length} \nitems to “${folder.name}”?',
+                        'Are you sure you want to the selected ${selectedFilesActions.selectedFileIds.length} \nitems to “${folder.name}”?',
                         style: TextStyle(
                           fontSize: 11,
                           color: MacosColors.black,
@@ -164,70 +165,9 @@ class FolderTemplateWidget extends StatelessWidget {
                   selectedFilesActions.selectedFileIds.toList(),
                 );
                 if (context.mounted) {
-                  await showMacosAlertDialog(
-                    context: context,
-                    barrierColor: MacosColors.black.withAlpha(30),
-                    barrierDismissible: true,
-                    builder: (context) {
-                      return GaussianBlurDialog(
-                        contentPadding: const EdgeInsets.only(
-                          top: 20,
-                          left: 22,
-                          right: 22,
-                          bottom: 16,
-                        ),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  'Added to favorites',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: MacosColors.black,
-                                  ),
-                                  textAlign: TextAlign.start,
-                                ),
-                                const SizedBox(width: 4),
-                                MacosIcon(
-                                  CupertinoIcons.heart_fill,
-                                  color: MacosColors.black,
-                                  size: 14,
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              '${selectedFilesActions.selectedFileIds.length} items have been added to your Favourites section',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: MacosColors.black,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              textAlign: TextAlign.start,
-                            ),
-                            const SizedBox(height: 16),
-                            SizedBox(
-                              width: double.infinity,
-                              child: AdaptiveButton(
-                                label: 'Alright!',
-                                style: AdaptiveButtonStyle.glass,
-                                color: MacosColors.black,
-                                onPressed: () {
-                                  if (context.mounted)
-                                    Navigator.of(context).pop();
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                  await AddedToFavoritesDialog.show(
+                    context, 
+                    message: '${selectedFilesActions.selectedFileIds.length} items have been added to your Favourites section'
                   );
                 }
 

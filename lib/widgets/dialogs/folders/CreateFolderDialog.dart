@@ -2,7 +2,7 @@ import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
-import 'package:photo_buddy/widgets/dialogs/GaussianBlurDialog.dart';
+import 'package:photo_buddy/widgets/dialogs/templates/GaussianBlurDialog.dart';
 import 'package:provider/provider.dart';
 
 class CreateFolderDialog extends StatefulWidget {
@@ -34,12 +34,17 @@ class _CreateFolderDialogState extends State<CreateFolderDialog> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text('Name'),
+                const Text('Name', style: TextStyle(fontSize: 13),),
+                const SizedBox(width : 6),
                 Flexible(
                   child: MacosTextField(
+                    textAlignVertical: TextAlignVertical.center,
                     controller: _controller,
                     placeholder: 'Folder name',
                     autofocus: true,
+                    style: TextStyle(
+                      color: MacosColors.black
+                    ),
                   ),
                 ),
               ],

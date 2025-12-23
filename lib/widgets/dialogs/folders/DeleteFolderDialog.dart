@@ -2,7 +2,7 @@ import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
-import 'package:photo_buddy/widgets/dialogs/GaussianBlurDialog.dart';
+import 'package:photo_buddy/widgets/dialogs/templates/GaussianBlurDialog.dart';
 import 'package:provider/provider.dart';
 
 class DeleteFolderDialog {

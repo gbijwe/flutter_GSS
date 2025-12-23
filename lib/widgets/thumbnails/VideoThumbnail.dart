@@ -13,6 +13,7 @@ class VideoThumbnailTile extends StatefulWidget {
   final bool isFavorite;
   final bool isSelected;
   final VoidCallback onTap;
+  final GestureTapDownCallback onSecondaryTapDown;
   final VoidCallback? favoriteTap;
   final VoidCallback? onDoubleTap;
   final VoidCallback? onLongPress;
@@ -28,6 +29,7 @@ class VideoThumbnailTile extends StatefulWidget {
     this.favoriteTap,
     this.onDoubleTap,
     this.onLongPress,
+    required this.onSecondaryTapDown
   });
 
   @override
@@ -95,10 +97,11 @@ class _VideoThumbnailTileState extends State<VideoThumbnailTile> {
             onTap: widget.onTap,
             onDoubleTap: widget.onDoubleTap, // for preview
             onLongPress: widget.onLongPress, // for selection
+            onSecondaryTapDown: widget.onSecondaryTapDown,
             child: Container(
               margin: EdgeInsets.all(2),
               decoration: BoxDecoration(
-                border: Border.all(color: widget.isSelected ? CupertinoColors.activeBlue : MacosColors.transparent),
+                border: Border.all(color: widget.isSelected ? CupertinoColors.activeBlue : MacosColors.transparent, width: 2.0),
                 borderRadius: BorderRadius.circular(8),
               ),
               clipBehavior: Clip.antiAlias,

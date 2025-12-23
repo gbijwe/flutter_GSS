@@ -6,6 +6,7 @@ class FileSelectionActionProvider extends ChangeNotifier {
 
   // getters
   Set<int> get selectedFileIds => _selectedFileIds;
+  int get selectedCount => _selectedFileIds.length;
   bool get selectionMode => _selectionMode; 
 
   void toggleFileSelection(int id) {

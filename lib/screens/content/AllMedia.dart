@@ -4,7 +4,7 @@ import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/screens/content/ContentTemplate.dart';
-import 'package:photo_buddy/widgets/dialogs/ProgressLoadingDialog.dart';
+import 'package:photo_buddy/widgets/dialogs/templates/ProgressLoadingDialog.dart';
 import 'package:photo_buddy/widgets/thumbnails/MediaThumbnailWrapper.dart';
 import 'package:provider/provider.dart';
 

@@ -14,6 +14,7 @@ class ImageThumbnailWidget extends StatelessWidget {
     required this.onTap,
     required this.onDoubleTap,
     required this.favoriteTap,
+    required this.onSecondaryTapDown,
     this.isSelected = false,
     this.onLongPress, 
   });
@@ -27,6 +28,7 @@ class ImageThumbnailWidget extends StatelessWidget {
   final VoidCallback onDoubleTap;
   final VoidCallback favoriteTap;
   final VoidCallback? onLongPress;
+  final GestureTapDownCallback onSecondaryTapDown;
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +36,11 @@ class ImageThumbnailWidget extends StatelessWidget {
       onTap: onTap, // add a preview mechanism
       onDoubleTap: onDoubleTap, // open preview
       onLongPress: onLongPress, // select this file
+      onSecondaryTapDown: onSecondaryTapDown,
       child: Container(
         margin: EdgeInsets.symmetric(horizontal: 2, vertical: 2),
         decoration: BoxDecoration(
-          border: Border.all(color: isSelected ? CupertinoColors.activeBlue : MacosColors.transparent),
+          border: Border.all(color: isSelected ? CupertinoColors.activeBlue : MacosColors.transparent, width: 2.0),
           borderRadius: BorderRadius.circular(8),
           boxShadow: [
             BoxShadow(

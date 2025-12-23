@@ -15,10 +15,9 @@ import 'package:photo_buddy/screens/content/filterMediaTypes/Panaromas.dart';
 import 'package:photo_buddy/screens/content/filterMediaTypes/Photos.dart';
 import 'package:photo_buddy/screens/content/filterMediaTypes/Videos.dart';
 import 'package:photo_buddy/screens/content/folders/FolderPage.dart';
-import 'package:photo_buddy/widgets/dialogs/CreateFolderDialog.dart';
+import 'package:photo_buddy/widgets/contextMenus/sidebar/folderContextMenu.dart';
+import 'package:photo_buddy/widgets/dialogs/folders/CreateFolderDialog.dart';
 import 'package:photo_buddy/widgets/CustomSideBarItem.dart';
-import 'package:photo_buddy/widgets/dialogs/DeleteFolderDialog.dart';
-import 'package:photo_buddy/widgets/dialogs/RenameFolderDialog.dart';
 import 'package:provider/provider.dart';
 
 class LandingScreen extends StatefulWidget {
@@ -36,80 +35,6 @@ class _LandingScreenState extends State<LandingScreen> {
   void dispose() {
     _contextMenuController.remove();
     super.dispose();
-  }
-
-  void _showFolderContextMenu(
-    BuildContext context,
-    Offset position,
-    int folderId,
-    String folderName,
-  ) {
-    _contextMenuController.show(
-      context: context,
-      contextMenuBuilder: (BuildContext context) {
-        return TapRegion(
-          onTapOutside: (event) {
-            _contextMenuController.remove();
-          },
-          child: Focus(
-            autofocus: true,
-            onKeyEvent: (node, event) {
-              if (event.logicalKey == LogicalKeyboardKey.escape) {
-                _contextMenuController.remove();
-                return KeyEventResult.handled;
-              }
-              return KeyEventResult.ignored;
-            },
-            child: AdaptiveTextSelectionToolbar.buttonItems(
-              anchors: TextSelectionToolbarAnchors(primaryAnchor: position),
-              buttonItems: <ContextMenuButtonItem>[
-                ContextMenuButtonItem(
-                  onPressed: () {
-                    ContextMenuController.removeAny();
-                    showMacosAlertDialog(
-                      context: context,
-                      builder: (context) => CreateFolderDialog(),
-                      barrierDismissible: true,
-                    );
-                  },
-                  label: 'Create Folder',
-                ),
-                ContextMenuButtonItem(
-                  onPressed: () {
-                    ContextMenuController.removeAny();
-                    showMacosAlertDialog(
-                      context: context,
-                      builder: (context) => RenameFolderDialog(
-                        folderId: folderId,
-                        folderName: folderName,
-                      ),
-                      barrierDismissible: true,
-                    );
-                  },
-                  label: 'Rename Folder',
-                ),
-                ContextMenuButtonItem(
-                  // onPressed: () {
-                  //   ContextMenuController.removeAny();
-                  //   showMacosAlertDialog(
-                  //     context: context,
-                  //     builder: (context) =>
-                  //         DeleteFolderDialog.show(context,  folderId),
-                  //     barrierDismissible: true,
-                  //   );
-                  // },
-                  onPressed: () {
-                    ContextMenuController.removeAny();
-                    DeleteFolderDialog.show(context, folderId);
-                  },
-                  label: 'Delete Folder',
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   Widget _getContentWidget() {
@@ -242,11 +167,12 @@ class _LandingScreenState extends State<LandingScreen> {
                         onPointerDown: (event) {
                           if (event.kind == PointerDeviceKind.mouse &&
                               event.buttons == 2) {
-                            _showFolderContextMenu(
+                            showSidebarFolderContextMenu(
                               context,
                               event.position,
                               folderItem.id,
                               folderItem.name,
+                              _contextMenuController
                             );
                           }
                         },
@@ -265,11 +191,12 @@ class _LandingScreenState extends State<LandingScreen> {
                         onPointerDown: (event) {
                           if (event.kind == PointerDeviceKind.mouse &&
                               event.buttons == 2) {
-                            _showFolderContextMenu(
+                            showSidebarFolderContextMenu(
                               context,
                               event.position,
                               folderItem.id,
                               folderItem.name,
+                              _contextMenuController
                             );
                           }
                         },
