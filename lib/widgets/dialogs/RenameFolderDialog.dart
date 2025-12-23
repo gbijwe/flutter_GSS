@@ -18,12 +18,11 @@ class _RenameFolderDialogState extends State<RenameFolderDialog> {
   @override
   Widget build(BuildContext context) {
     return MacosAlertDialog(
-      appIcon: const MacosIcon(CupertinoIcons.folder_open),
+      // appIcon: const MacosIcon(CupertinoIcons.folder_open),
       title: const Text('Rename'),
       message: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 16),
           Row(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -33,6 +32,7 @@ class _RenameFolderDialogState extends State<RenameFolderDialog> {
                 child: MacosTextField(
                   controller: _nameController,
                   placeholder: widget.folderName,
+                  autofocus: true,
                 ),
               ),
             ],
@@ -48,7 +48,7 @@ class _RenameFolderDialogState extends State<RenameFolderDialog> {
               widget.folderId,
               _nameController.text,
             );
-            Navigator.of(context).pop();
+            if (context.mounted) Navigator.of(context).pop();
           }
         },
       ),

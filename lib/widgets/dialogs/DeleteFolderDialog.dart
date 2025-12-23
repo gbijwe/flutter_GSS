@@ -1,6 +1,4 @@
-import 'dart:ui';
 import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
@@ -42,8 +40,9 @@ class DeleteFolderDialog {
               width: double.infinity,
               child: AdaptiveButton(
                 label: 'Delete this folder',
-                style: AdaptiveButtonStyle.glass,
-                color: MacosColors.systemRedColor,
+                style: AdaptiveButtonStyle.filled,
+                color: const Color.fromARGB(255, 255, 189, 186),
+                textColor: MacosColors.systemRedColor,
                 onPressed: () async {
                   await context.read<FolderMediaProvider>().deleteFolder(
                     folderId,
