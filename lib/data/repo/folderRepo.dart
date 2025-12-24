@@ -27,10 +27,31 @@ class FolderRepository {
     required String name,
     required String sourceDirectory,
   }) async {
-    final folder = Folder(name: name, sourceDirectory: sourceDirectory);
+    final folder = Folder(name: name, sourceDirectory: sourceDirectory, createdAt: DateTime.now());
 
     return await _isar.writeTxn(() async {
       return await _isar.folders.put(folder);
+    });
+  }
+
+  /// Duplicate a folder
+  Future<int> duplicate({
+    required int folderId
+  }) async {
+    final originalFolder = await _isar.folders.get(folderId);
+    if (originalFolder == null) {
+      throw Exception("Folder not found");
+    }
+
+    final duplicatedFolder = Folder(
+      name: "Copy of ${originalFolder.name}",
+      createdAt: DateTime.now(),
+      mediaItemIds: originalFolder.mediaItemIds,
+      sourceDirectory: originalFolder.sourceDirectory,
+    );
+
+    return await _isar.writeTxn(() async {
+      return await _isar.folders.put(duplicatedFolder);
     });
   }
 

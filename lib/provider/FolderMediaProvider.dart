@@ -94,6 +94,27 @@ class FolderMediaProvider extends ChangeNotifier {
     }
   }
 
+  /// Duplicate a folder
+  Future<void> duplicateFolder({required int folderId}) async {
+    try {
+      final currentPath = _pathContext.currentPath;
+      if (currentPath == null) {
+        _setStatus(
+          FolderOperationStatus.error,
+          error: 'No source directory selected',
+        );
+        return;
+      }
+      await _folderRepo.duplicate(folderId: folderId);
+      await _loadFolders();
+    } catch (e) {
+      _setStatus(
+        FolderOperationStatus.error,
+        error: "Failed to duplicate folder: $e",
+      );
+    }
+  }
+
   /// Add media to folder
   Future<void> addMediaToFolder({
     required int folderId,
