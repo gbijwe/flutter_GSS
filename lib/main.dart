@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:macos_ui/macos_ui.dart';
 import 'package:photo_buddy/helpers/PathContextManger.dart';
+import 'package:photo_buddy/provider/FaceClusteringProvider.dart';
 import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
@@ -37,6 +38,9 @@ void main() async {
       providers: [
         // ChangeNotifierProvider(create: (_) => FileSystemMediaProvider()..loadSavedPath()),
         ChangeNotifierProvider.value(value: mediaProvider),
+        ChangeNotifierProvider(
+          create: (_) => FaceClusteringProvider(isar: mediaProvider.mediaRepo.isar),
+        ),
         ChangeNotifierProxyProvider<
           FileSystemMediaProvider,
           FolderMediaProvider

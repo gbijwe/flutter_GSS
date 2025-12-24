@@ -14,6 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_launcher_icons: ^0.14.4
+  image: ^4.7.2
   image_size_getter: ^2.4.1
   isar_community: ^3.3.0
   isar_community_flutter_libs: ^3.3.0
@@ -24,6 +25,7 @@ dependencies:
   provider: ^6.1.5+1
   pull_down_button: ^0.10.2
   shared_preferences: ^2.5.4
+  tflite_flutter: ^0.12.1
   watcher: ^1.2.0
 
 dev_dependencies:
@@ -37,3 +39,4 @@ flutter:
   uses-material-design: true
   assets: 
     - assets/icon/
+    - assets/models/facenet.tflite

@@ -4,8 +4,10 @@ import 'package:image_size_getter/file_input.dart';
 import 'package:image_size_getter/image_size_getter.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:photo_buddy/data/isar_classes/faceEmbedding.dart';
 import 'package:photo_buddy/data/isar_classes/folder.dart';
 import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
+import 'package:photo_buddy/data/isar_classes/person.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
 import 'package:photo_buddy/helpers/PathContextManger.dart';
 
@@ -18,7 +20,7 @@ class MediaRepository {
     final dir = await getApplicationDocumentsDirectory();
 
     // Open Isar with the schema
-    _isar = await Isar.open([MediaItemSchema, FolderSchema], directory: dir.path);
+    _isar = await Isar.open([MediaItemSchema, FolderSchema, FaceEmbeddingSchema, PersonSchema], directory: dir.path);
   }
 
   /// Get all items sorted by DateAdded 

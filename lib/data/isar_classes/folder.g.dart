@@ -41,14 +41,19 @@ const FolderSchema = CollectionSchema(
   deserializeProp: _folderDeserializeProp,
   idName: r'id',
   indexes: {
-    r'name': IndexSchema(
-      id: 879695947855722453,
-      name: r'name',
+    r'name_sourceDirectory': IndexSchema(
+      id: -3060505947820810996,
+      name: r'name_sourceDirectory',
       unique: true,
       replace: false,
       properties: [
         IndexPropertySchema(
           name: r'name',
+          type: IndexType.hash,
+          caseSensitive: true,
+        ),
+        IndexPropertySchema(
+          name: r'sourceDirectory',
           type: IndexType.hash,
           caseSensitive: true,
         ),
@@ -150,56 +155,121 @@ void _folderAttach(IsarCollection<dynamic> col, Id id, Folder object) {
 }
 
 extension FolderByIndex on IsarCollection<Folder> {
-  Future<Folder?> getByName(String name) {
-    return getByIndex(r'name', [name]);
+  Future<Folder?> getByNameSourceDirectory(
+    String name,
+    String sourceDirectory,
+  ) {
+    return getByIndex(r'name_sourceDirectory', [name, sourceDirectory]);
   }
 
-  Folder? getByNameSync(String name) {
-    return getByIndexSync(r'name', [name]);
+  Folder? getByNameSourceDirectorySync(String name, String sourceDirectory) {
+    return getByIndexSync(r'name_sourceDirectory', [name, sourceDirectory]);
   }
 
-  Future<bool> deleteByName(String name) {
-    return deleteByIndex(r'name', [name]);
+  Future<bool> deleteByNameSourceDirectory(
+    String name,
+    String sourceDirectory,
+  ) {
+    return deleteByIndex(r'name_sourceDirectory', [name, sourceDirectory]);
   }
 
-  bool deleteByNameSync(String name) {
-    return deleteByIndexSync(r'name', [name]);
+  bool deleteByNameSourceDirectorySync(String name, String sourceDirectory) {
+    return deleteByIndexSync(r'name_sourceDirectory', [name, sourceDirectory]);
   }
 
-  Future<List<Folder?>> getAllByName(List<String> nameValues) {
-    final values = nameValues.map((e) => [e]).toList();
-    return getAllByIndex(r'name', values);
+  Future<List<Folder?>> getAllByNameSourceDirectory(
+    List<String> nameValues,
+    List<String> sourceDirectoryValues,
+  ) {
+    final len = nameValues.length;
+    assert(
+      sourceDirectoryValues.length == len,
+      'All index values must have the same length',
+    );
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([nameValues[i], sourceDirectoryValues[i]]);
+    }
+
+    return getAllByIndex(r'name_sourceDirectory', values);
   }
 
-  List<Folder?> getAllByNameSync(List<String> nameValues) {
-    final values = nameValues.map((e) => [e]).toList();
-    return getAllByIndexSync(r'name', values);
+  List<Folder?> getAllByNameSourceDirectorySync(
+    List<String> nameValues,
+    List<String> sourceDirectoryValues,
+  ) {
+    final len = nameValues.length;
+    assert(
+      sourceDirectoryValues.length == len,
+      'All index values must have the same length',
+    );
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([nameValues[i], sourceDirectoryValues[i]]);
+    }
+
+    return getAllByIndexSync(r'name_sourceDirectory', values);
   }
 
-  Future<int> deleteAllByName(List<String> nameValues) {
-    final values = nameValues.map((e) => [e]).toList();
-    return deleteAllByIndex(r'name', values);
+  Future<int> deleteAllByNameSourceDirectory(
+    List<String> nameValues,
+    List<String> sourceDirectoryValues,
+  ) {
+    final len = nameValues.length;
+    assert(
+      sourceDirectoryValues.length == len,
+      'All index values must have the same length',
+    );
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([nameValues[i], sourceDirectoryValues[i]]);
+    }
+
+    return deleteAllByIndex(r'name_sourceDirectory', values);
   }
 
-  int deleteAllByNameSync(List<String> nameValues) {
-    final values = nameValues.map((e) => [e]).toList();
-    return deleteAllByIndexSync(r'name', values);
+  int deleteAllByNameSourceDirectorySync(
+    List<String> nameValues,
+    List<String> sourceDirectoryValues,
+  ) {
+    final len = nameValues.length;
+    assert(
+      sourceDirectoryValues.length == len,
+      'All index values must have the same length',
+    );
+    final values = <List<dynamic>>[];
+    for (var i = 0; i < len; i++) {
+      values.add([nameValues[i], sourceDirectoryValues[i]]);
+    }
+
+    return deleteAllByIndexSync(r'name_sourceDirectory', values);
   }
 
-  Future<Id> putByName(Folder object) {
-    return putByIndex(r'name', object);
+  Future<Id> putByNameSourceDirectory(Folder object) {
+    return putByIndex(r'name_sourceDirectory', object);
   }
 
-  Id putByNameSync(Folder object, {bool saveLinks = true}) {
-    return putByIndexSync(r'name', object, saveLinks: saveLinks);
+  Id putByNameSourceDirectorySync(Folder object, {bool saveLinks = true}) {
+    return putByIndexSync(
+      r'name_sourceDirectory',
+      object,
+      saveLinks: saveLinks,
+    );
   }
 
-  Future<List<Id>> putAllByName(List<Folder> objects) {
-    return putAllByIndex(r'name', objects);
+  Future<List<Id>> putAllByNameSourceDirectory(List<Folder> objects) {
+    return putAllByIndex(r'name_sourceDirectory', objects);
   }
 
-  List<Id> putAllByNameSync(List<Folder> objects, {bool saveLinks = true}) {
-    return putAllByIndexSync(r'name', objects, saveLinks: saveLinks);
+  List<Id> putAllByNameSourceDirectorySync(
+    List<Folder> objects, {
+    bool saveLinks = true,
+  }) {
+    return putAllByIndexSync(
+      r'name_sourceDirectory',
+      objects,
+      saveLinks: saveLinks,
+    );
   }
 }
 
@@ -280,21 +350,27 @@ extension FolderQueryWhere on QueryBuilder<Folder, Folder, QWhereClause> {
     });
   }
 
-  QueryBuilder<Folder, Folder, QAfterWhereClause> nameEqualTo(String name) {
+  QueryBuilder<Folder, Folder, QAfterWhereClause> nameEqualToAnySourceDirectory(
+    String name,
+  ) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
-        IndexWhereClause.equalTo(indexName: r'name', value: [name]),
+        IndexWhereClause.equalTo(
+          indexName: r'name_sourceDirectory',
+          value: [name],
+        ),
       );
     });
   }
 
-  QueryBuilder<Folder, Folder, QAfterWhereClause> nameNotEqualTo(String name) {
+  QueryBuilder<Folder, Folder, QAfterWhereClause>
+  nameNotEqualToAnySourceDirectory(String name) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
             .addWhereClause(
               IndexWhereClause.between(
-                indexName: r'name',
+                indexName: r'name_sourceDirectory',
                 lower: [],
                 upper: [name],
                 includeUpper: false,
@@ -302,7 +378,7 @@ extension FolderQueryWhere on QueryBuilder<Folder, Folder, QWhereClause> {
             )
             .addWhereClause(
               IndexWhereClause.between(
-                indexName: r'name',
+                indexName: r'name_sourceDirectory',
                 lower: [name],
                 includeLower: false,
                 upper: [],
@@ -312,7 +388,7 @@ extension FolderQueryWhere on QueryBuilder<Folder, Folder, QWhereClause> {
         return query
             .addWhereClause(
               IndexWhereClause.between(
-                indexName: r'name',
+                indexName: r'name_sourceDirectory',
                 lower: [name],
                 includeLower: false,
                 upper: [],
@@ -320,9 +396,66 @@ extension FolderQueryWhere on QueryBuilder<Folder, Folder, QWhereClause> {
             )
             .addWhereClause(
               IndexWhereClause.between(
-                indexName: r'name',
+                indexName: r'name_sourceDirectory',
                 lower: [],
                 upper: [name],
+                includeUpper: false,
+              ),
+            );
+      }
+    });
+  }
+
+  QueryBuilder<Folder, Folder, QAfterWhereClause> nameSourceDirectoryEqualTo(
+    String name,
+    String sourceDirectory,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(
+          indexName: r'name_sourceDirectory',
+          value: [name, sourceDirectory],
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Folder, Folder, QAfterWhereClause>
+  nameEqualToSourceDirectoryNotEqualTo(String name, String sourceDirectory) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name_sourceDirectory',
+                lower: [name],
+                upper: [name, sourceDirectory],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name_sourceDirectory',
+                lower: [name, sourceDirectory],
+                includeLower: false,
+                upper: [name],
+              ),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name_sourceDirectory',
+                lower: [name, sourceDirectory],
+                includeLower: false,
+                upper: [name],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'name_sourceDirectory',
+                lower: [name],
+                upper: [name, sourceDirectory],
                 includeUpper: false,
               ),
             );
