@@ -86,9 +86,9 @@ class MediaRepository {
   }
 
   /// THE SYNC LOGIC
-  Future<void> syncFromDirectory(String directoryPath) async {
+  Future<List<MediaItem>> syncFromDirectory(String directoryPath) async {
     final dir = Directory(directoryPath);
-    if (!await dir.exists()) return;
+    if (!await dir.exists()) return [];
 
     // 1. Get real files from disk
     final List<FileSystemEntity> diskFiles = dir.listSync();
@@ -169,6 +169,8 @@ class MediaRepository {
         await _isar.mediaItems.deleteAll(idsToDelete);
       });
     }
+    
+    return newItems;
   }
 
   /// Simple helper to map extension strings to your Enum

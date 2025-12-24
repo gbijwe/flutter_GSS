@@ -35,14 +35,14 @@ class FaceClusteringProvider extends ChangeNotifier {
     _faceEmbeddingService = FaceEmbeddingService();
 
     final mediaRepo = MediaRepository();
-    final faceEmbedRepo = FaceEmbeddingRepo(isar);
+    final faceRepo = FaceEmbeddingRepo(isar);
     final clusteringService = ClusteringService();
     final personAggregationService = PersonAggregationService(
-      faceEmbeddingRepo: faceEmbedRepo,
+      faceEmbeddingRepo: faceRepo,
       clusteringService: clusteringService,
     );
     final incrementalClusteringService = IncrementalClusteringService(
-      faceEmbeddingRepo: faceEmbedRepo,
+      faceEmbeddingRepo: faceRepo,
       clusteringService: clusteringService,
       personAggregationService: personAggregationService,
     );
@@ -50,7 +50,7 @@ class FaceClusteringProvider extends ChangeNotifier {
     _initService = FaceClusteringInitService(
       isar: isar,
       mediaRepo: mediaRepo,
-      faceEmbeddingRepo: faceEmbedRepo,
+      faceEmbeddingRepo: faceRepo,
       faceEmbeddingService: _faceEmbeddingService,
       clusteringService: clusteringService,
       personAggregationService: personAggregationService,

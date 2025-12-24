@@ -5,6 +5,7 @@ import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/data/repo/mediaRepo.dart';
 import 'package:photo_buddy/helpers/FileTypeChecker.dart';
 import 'package:photo_buddy/helpers/PathContextManger.dart';
+import 'package:photo_buddy/provider/FaceClusteringProvider.dart';
 
 enum MediaOperationStatus { idle, loading, success, error }
 
@@ -12,14 +13,14 @@ class FileSystemMediaProvider extends ChangeNotifier {
   final MediaRepository _repo = MediaRepository();
   final _pathContext = PathContextManager();
 
-  List<MediaItem> _mediaFiles = []; 
-  List<MediaItem> _recentlyAddedMediaFiles = []; 
+  List<MediaItem> _mediaFiles = [];
+  List<MediaItem> _recentlyAddedMediaFiles = [];
   List<MediaItem> _favoriteMediaFiles = [];
   MediaOperationStatus _status = MediaOperationStatus.idle;
   String? _errorMessage;
   double _progress = 0.0;
   String _currentOperation = '';
-
+  FaceClusteringProvider? _faceClusteringProvider;
 
   // getters
   String? get currentPath => _pathContext.currentPath;
@@ -29,13 +30,17 @@ class FileSystemMediaProvider extends ChangeNotifier {
   bool get hasError => _status == MediaOperationStatus.error;
   double get progress => _progress;
   String get currentOperation => _currentOperation;
-  
+
   List<MediaItem> get mediaFiles => _mediaFiles;
   List<MediaItem> get recentlyAddedMediaFiles => _recentlyAddedMediaFiles;
-  List<MediaItem> get favoriteMediaFiles => _mediaFiles.where((file) => file.isFavorite).toList();
-  List<MediaItem> get panaromicImages => _mediaFiles.where((file) => file.type == FileType.image && file.aspectRatio != null && file.aspectRatio! < 0.40).toList();
-  List<MediaItem> get imageFilesOnly => _mediaFiles.where((file) => file.type == FileType.image).toList();
-  List<MediaItem> get videoFilesOnly => _mediaFiles.where((file) => file.type == FileType.video).toList();
+  List<MediaItem> get favoriteMediaFiles =>
+      _mediaFiles.where((file) => file.isFavorite).toList();
+  List<MediaItem> get panaromicImages =>
+      _mediaFiles.where((file) => file.type == FileType.image && file.aspectRatio != null && file.aspectRatio! < 0.40).toList();
+  List<MediaItem> get imageFilesOnly =>
+      _mediaFiles.where((file) => file.type == FileType.image).toList();
+  List<MediaItem> get videoFilesOnly =>
+      _mediaFiles.where((file) => file.type == FileType.video).toList();
 
   void _setStatus(MediaOperationStatus status, {String? error, String? operation}) {
     _status = status;
@@ -50,6 +55,10 @@ class FileSystemMediaProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setFaceClusteringProvider(FaceClusteringProvider provider) {
+    _faceClusteringProvider = provider;
+  }
+
   // Initialize DB and load previous state
   Future<void> init() async {
     _setStatus(MediaOperationStatus.loading, operation: 'Initializing...');
@@ -58,25 +67,28 @@ class FileSystemMediaProvider extends ChangeNotifier {
     try {
       _updateProgress(0.2, operation: 'Loading configuration...');
       await _pathContext.init(); // Load saved path or create default
-      
+
       _updateProgress(0.4, operation: 'Opening database...');
       await _repo.init(); // Open Isar
 
-      // 1. Show cached data immediately (Instant UI)
       _updateProgress(0.6, operation: 'Loading cached media...');
       await _refreshList();
       await getRecentlyAddedMedia();
-      
+
+      // Initialize face clustering in background
+      if (_faceClusteringProvider != null && !_faceClusteringProvider!.isInitialized) {
+        await _faceClusteringProvider!.initialize();
+      }
+
+      // Sync from directory if path exists
+      if (_pathContext.currentPath != null) {
+        await _repo.syncFromDirectory(_pathContext.currentPath!);
+        await _refreshList();
+        await getRecentlyAddedMedia();
+      }
+
       _updateProgress(1.0, operation: 'Done!');
       _setStatus(MediaOperationStatus.success);
-      
-      // 2. Sync in background to find new files
-      if (_pathContext.currentPath != null) {
-        _repo.syncFromDirectory(_pathContext.currentPath!).then((_) {
-          getRecentlyAddedMedia();
-          _refreshList(); // Update UI after sync finishes
-        });
-      }
     } catch (e) {
       _setStatus(
         MediaOperationStatus.error,
@@ -87,22 +99,24 @@ class FileSystemMediaProvider extends ChangeNotifier {
 
   Future<void> rescanDirectory() async {
     final currentPath = _pathContext.currentPath;
-    if (currentPath == null) {
-      _setStatus(MediaOperationStatus.error, error: 'No source directory selected');
-      return;
-    }
+    if (currentPath == null) return;
 
     _setStatus(MediaOperationStatus.loading, operation: 'Rescanning directory...');
     _updateProgress(0.0);
 
     try {
       _updateProgress(0.3, operation: 'Scanning files...');
-      await _repo.syncFromDirectory(currentPath);
-      
+      final newItems = await _repo.syncFromDirectory(currentPath);
+
       _updateProgress(0.7, operation: 'Loading media...');
       await _refreshList();
       await getRecentlyAddedMedia();
-      
+
+      _updateProgress(0.8, operation: 'Processing faces...');
+      if (_faceClusteringProvider != null && newItems.isNotEmpty) {
+        await _faceClusteringProvider!.processNewMedia(newItems);
+      }
+
       _updateProgress(1.0, operation: 'Done!');
       _setStatus(MediaOperationStatus.success);
     } catch (e) {
@@ -123,16 +137,19 @@ class FileSystemMediaProvider extends ChangeNotifier {
     try {
       _updateProgress(0.2, operation: 'Saving configuration...');
       await _pathContext.setCurrentPath(directoryPath);
-      notifyListeners();
 
-      // Sync and Load
       _updateProgress(0.4, operation: 'Scanning files...');
       await _repo.syncFromDirectory(directoryPath);
-      
+
       _updateProgress(0.7, operation: 'Loading media...');
-      await getRecentlyAddedMedia();
       await _refreshList();
-      
+      await getRecentlyAddedMedia();
+
+      _updateProgress(0.8, operation: 'Initializing face clustering...');
+      if (_faceClusteringProvider != null) {
+        await _faceClusteringProvider!.initialize();
+      }
+
       _updateProgress(1.0, operation: 'Done!');
       _setStatus(MediaOperationStatus.success);
     } catch (e) {
@@ -143,9 +160,8 @@ class FileSystemMediaProvider extends ChangeNotifier {
     }
   }
 
-  // Get all recently added media files
   Future<void> getRecentlyAddedMedia() async {
-    _recentlyAddedMediaFiles = await _repo.getRecentlyAddedMedia(); 
+    _recentlyAddedMediaFiles = await _repo.getRecentlyAddedMedia();
     notifyListeners();
   }
 
@@ -156,19 +172,14 @@ class FileSystemMediaProvider extends ChangeNotifier {
 
   Future<void> toggleFavorite(int id) async {
     await _repo.toggleFavorite(id);
-    // Reload to update the UI
     final index = _mediaFiles.indexWhere((item) => item.id == id);
     if (index == -1) return;
 
     final file = _mediaFiles[index];
-    // Update cached list of all media files
     file.isFavorite = !file.isFavorite;
 
-    // Update the favoriteMediaFiles list
     if (file.isFavorite) {
-      if (!_favoriteMediaFiles.any((e) => e.id == id)) {
-        _favoriteMediaFiles.add(file);
-      }
+      if (!_favoriteMediaFiles.any((e) => e.id == id)) _favoriteMediaFiles.add(file);
     } else {
       _favoriteMediaFiles.removeWhere((e) => e.id == id);
     }
@@ -182,18 +193,14 @@ class FileSystemMediaProvider extends ChangeNotifier {
 
       final file = _mediaFiles[index];
       if (!file.isFavorite) {
-        _repo.toggleFavorite(file.id);
-        // Update cached list of all media files
+        await _repo.toggleFavorite(file.id);
         file.isFavorite = true;
-        if (!_favoriteMediaFiles.any((e) => e.id == id)) {
-          _favoriteMediaFiles.add(file);
-        }
+        if (!_favoriteMediaFiles.any((e) => e.id == id)) _favoriteMediaFiles.add(file);
       }
     }
     notifyListeners();
   }
 
-  // Remove from favorites
   Future<void> removeFromFavorites(List<int> ids) async {
     for (var id in ids) {
       final index = _mediaFiles.indexWhere((item) => item.id == id);
@@ -201,21 +208,19 @@ class FileSystemMediaProvider extends ChangeNotifier {
 
       final file = _mediaFiles[index];
       if (file.isFavorite) {
-        _repo.toggleFavorite(file.id);
-        // Update cached list of all media files
+        await _repo.toggleFavorite(file.id);
         file.isFavorite = false;
-        if (!_favoriteMediaFiles.any((e) => e.id == id)) {
-          _favoriteMediaFiles.remove(file);
-        }
+        _favoriteMediaFiles.removeWhere((e) => e.id == id);
       }
     }
     notifyListeners();
   }
 
-  // check if a media item is favorite by id
   bool isFavorite(int id) {
-    final item = _mediaFiles.firstWhere((element) => element.id == id);
-    return item.isFavorite;
+    final item = _mediaFiles.firstWhere(
+      (element) => element.id == id,
+    );
+    return item.id != -1 && item.isFavorite;
   }
 
   void clearError() {
@@ -230,6 +235,5 @@ class FileSystemMediaProvider extends ChangeNotifier {
     return _repo.getMediaItemsByIds(ids);
   }
 
-  // MediaRepository getter to be used by FolderRepository
   MediaRepository get mediaRepo => _repo;
 }

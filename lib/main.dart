@@ -39,7 +39,11 @@ void main() async {
         // ChangeNotifierProvider(create: (_) => FileSystemMediaProvider()..loadSavedPath()),
         ChangeNotifierProvider.value(value: mediaProvider),
         ChangeNotifierProvider(
-          create: (_) => FaceClusteringProvider(isar: mediaProvider.mediaRepo.isar),
+          create: (_) {
+            final faceProvider = FaceClusteringProvider(isar: mediaProvider.mediaRepo.isar);
+            mediaProvider.setFaceClusteringProvider(faceProvider);
+            return faceProvider;
+          },
         ),
         ChangeNotifierProxyProvider<
           FileSystemMediaProvider,
