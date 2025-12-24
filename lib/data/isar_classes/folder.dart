@@ -7,7 +7,7 @@ part 'folder.g.dart';
 class Folder {
   Id id = Isar.autoIncrement;
 
-  @Index(unique: true)
+  @Index(unique: true, composite: [CompositeIndex('sourceDirectory')])
   String name;
 
   DateTime? createdAt;

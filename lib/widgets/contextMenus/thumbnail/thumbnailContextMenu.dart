@@ -1,12 +1,9 @@
 import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:macos_ui/macos_ui.dart';
-import 'package:path/path.dart';
 import 'package:photo_buddy/data/isar_classes/mediaItem.dart';
 import 'package:photo_buddy/helpers/OpenFileInFinder.dart';
-import 'package:photo_buddy/provider/FileSelectionActionProvider.dart';
 import 'package:photo_buddy/provider/FileSystemMediaProvider.dart';
 import 'package:photo_buddy/provider/FolderMediaProvider.dart';
 import 'package:photo_buddy/provider/NavigatorStateProvider.dart';
@@ -27,7 +24,6 @@ void showMediaThumbnailContextMenu(
   contextMenuController.show(
     context: context,
     contextMenuBuilder: (BuildContext context) {
-      final selectionProvider = context.watch<FileSelectionActionProvider>();
       final folderActionsProvider = context.read<FolderMediaProvider>();
       final folders = context.watch<FolderMediaProvider>().folders.toList();
       final navigatorProvider = context.watch<NavigatorStateProvider>();
